@@ -16,6 +16,14 @@ export interface Lesson {
   language?: 'javascript' | 'typescript' | 'html' | 'css' | 'python' | 'cpp'
 }
 
+// Import topics from separate files
+import { htmlCssTopics } from './topics/html-css'
+import { reactTopics } from './topics/react'
+import { javascriptTopics } from './topics/javascript'
+
+// Re-export for convenience
+export { htmlCssTopics, reactTopics, javascriptTopics }
+
 export const interviewTopics: Topic[] = [
   {
     id: 'interview-js',
@@ -24,7 +32,7 @@ export const interviewTopics: Topic[] = [
     difficulty: 'intermediate',
     duration: '4 hours',
     topics: ['Closures', 'this keyword', 'Event Loop', 'Hoisting'],
-    lessons: [
+     lessons: [
       {
   id: 'interview-closures',
   title: 'Closures Interview Questions',
@@ -8640,6 +8648,12 @@ export function getTopicsByCategory(category: string): Topic[] {
   switch (category) {
     case 'interview':
       return interviewTopics
+    case 'html-css':
+      return htmlCssTopics
+    case 'react':
+      return reactTopics
+    case 'javascript':
+      return javascriptTopics
     default:
       return []
   }

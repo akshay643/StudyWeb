@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {  findTopic, findLesson } from '@/data/study-content'
-import {reactTopics} from '@/data/topics/react'
+import {reactTopics} from '@/data/topics/react';
 import { Clock, ArrowRight, Atom, Play } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { TopicView } from '@/components/lesson/topic-view'
@@ -14,6 +14,8 @@ const difficultyColors = {
   intermediate: 'warning',
   advanced: 'destructive',
 } as const
+
+console.log(reactTopics);
 
 function TopicsList() {
   const navigate = useNavigate()
@@ -91,12 +93,19 @@ function TopicsList() {
 function TopicPage() {
   const { topicId } = useParams()
   const navigate = useNavigate()
+  
+  console.log('Looking for topicId:', topicId)
+  console.log('Available topics:', reactTopics)
+  
   const topic = findTopic('react', topicId || '')
+  
+  console.log('Found topic:', topic)
 
   if (!topic) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
         <h1 className="text-2xl font-bold mb-4">Topic not found</h1>
+        <p className="text-muted-foreground mb-4">Looking for: {topicId}</p>
         <Button onClick={() => navigate('/react')}>Back to React</Button>
       </div>
     )

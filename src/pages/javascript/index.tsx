@@ -2,9 +2,9 @@ import { Routes, Route, useNavigate, useParams } from 'react-router-dom'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {  findTopic, findLesson } from '@/data/study-content'
-import {javascriptTopics} from '@/data/topics/javascript'
-import { Clock, ArrowRight, Code2, Play } from 'lucide-react'
+import { findTopic, findLesson } from '@/data/study-content'
+import { javascriptTopics } from '@/data/topics/javascript'
+import { Clock, ArrowRight, Code, Play } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { TopicView } from '@/components/lesson/topic-view'
 import { LessonViewer } from '@/components/lesson/lesson-viewer'
@@ -24,7 +24,7 @@ function TopicsList() {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-lg bg-yellow-500/10 flex items-center justify-center">
-            <Code2 className="h-6 w-6 text-yellow-500" />
+            <Code className="h-6 w-6 text-yellow-500" />
           </div>
           <div>
             <h1 className="text-3xl font-bold">JavaScript</h1>
@@ -32,8 +32,8 @@ function TopicsList() {
           </div>
         </div>
         <p className="text-muted-foreground max-w-3xl">
-          From variables and functions to async programming and advanced patterns, 
-          this comprehensive guide will take you from beginner to proficient JavaScript developer.
+          From basics to advanced concepts, learn JavaScript step by step with practical examples
+          and hands-on exercises.
         </p>
       </div>
 
@@ -71,16 +71,11 @@ function TopicsList() {
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {topic.topics.slice(0, 3).map((t) => (
+                  {topic.topics.map((t) => (
                     <Badge key={t} variant="outline" className="text-xs">
                       {t}
                     </Badge>
                   ))}
-                  {topic.topics.length > 3 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{topic.topics.length - 3} more
-                    </Badge>
-                  )}
                 </div>
                 <Button className="w-full group-hover:bg-primary group-hover:text-primary-foreground" variant="outline">
                   Start Learning

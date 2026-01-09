@@ -7,7 +7,6 @@ import { Clock, ArrowRight, MessageSquareCode, Play, Trophy } from 'lucide-react
 import { motion } from 'framer-motion'
 import { TopicView } from '@/components/lesson/topic-view'
 import { LessonViewer } from '@/components/lesson/lesson-viewer'
-
 const difficultyColors = {
   beginner: 'success',
   intermediate: 'warning',

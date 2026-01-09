@@ -1,4 +1,4 @@
-import { Topic } from '../types'
+import type { Topic } from '../study-content'
 
 export const javascriptTopics: Topic[] = [
   {
