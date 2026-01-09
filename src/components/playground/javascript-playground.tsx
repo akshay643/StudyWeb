@@ -1,5 +1,4 @@
-import { Topic } from '../study-content'
-
+import { Topic } from '@/data/study-content'
 export const reactTopics: Topic[] = [
     {
   id: 'react-basics',
