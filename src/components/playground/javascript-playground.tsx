@@ -1991,3 +1991,565 @@ function PreventDefault() {
 ## Stopping Event Propagation
 
 \`\`\`js
+function EventPropagation() {
+  const handleOuterClick = () => {
+    console.log('Outer div clicked');
+  };
+  
+  const handleInnerClick = (e) => {
+    e.stopPropagation(); // Prevents event from bubbling up
+    console.log('Inner button clicked');
+  };
+  
+  return (
+    <div onClick={handleOuterClick} style={{ padding: '20px', background: '#eee' }}>
+      <p>Click anywhere in this box</p>
+      
+      {/* Without stopPropagation, clicking button would also trigger outer click */}
+      <button onClick={handleInnerClick}>
+        Click me (won't trigger outer)
+      </button>
+      
+      {/* This WILL trigger outer click */}
+      <button onClick={() => console.log('Regular button')}>
+        Regular button
+      </button>
+    </div>
+  );
+}
+\`\`\`
+
+## Event Object Properties
+
+\`\`\`js
+function EventProperties() {
+  const handleClick = (e) => {
+    // Target properties
+    console.log('target:', e.target);              // Element that triggered event
+    console.log('currentTarget:', e.currentTarget); // Element with handler
+    console.log('type:', e.type);                  // Event type ('click')
+    
+    // Mouse position
+    console.log('clientX:', e.clientX);  // X relative to viewport
+    console.log('clientY:', e.clientY);  // Y relative to viewport
+    console.log('pageX:', e.pageX);      // X relative to document
+    console.log('pageY:', e.pageY);      // Y relative to document
+    console.log('screenX:', e.screenX);  // X relative to screen
+    console.log('screenY:', e.screenY);  // Y relative to screen
+    
+    // Modifier keys
+    console.log('ctrlKey:', e.ctrlKey);
+    console.log('shiftKey:', e.shiftKey);
+    console.log('altKey:', e.altKey);
+    console.log('metaKey:', e.metaKey);  // Cmd on Mac
+    
+    // Mouse button
+    console.log('button:', e.button);  // 0=left, 1=middle, 2=right
+    
+    // Timestamps
+    console.log('timeStamp:', e.timeStamp);
+    
+    // Prevent and stop
+    // e.preventDefault();
+    // e.stopPropagation();
+  };
+  
+  return <button onClick={handleClick}>Click for event info</button>;
+}
+\`\`\`
+
+## Synthetic Events
+React wraps native events in SyntheticEvent for cross-browser compatibility.
+
+\`\`\`js
+function SyntheticEventExample() {
+  const handleClick = (e) => {
+    // SyntheticEvent
+    console.log('Synthetic event:', e);
+    
+    // Access native event if needed
+    console.log('Native event:', e.nativeEvent);
+    
+    // Event pooling note: In React 17+, events are not pooled
+    // You can access event properties asynchronously
+    setTimeout(() => {
+      console.log('Event type (async):', e.type); // Works in React 17+
+    }, 100);
+    
+    // If you need to use the event asynchronously in React <17:
+    // e.persist(); // Not needed in React 17+
+  };
+  
+  return <button onClick={handleClick}>Click me</button>;
+}
+\`\`\`
+
+## Event Handler Best Practices
+
+\`\`\`js
+function BestPractices() {
+  const [items, setItems] = useState(['a', 'b', 'c']);
+  
+  // ✅ Define handlers outside JSX for reuse and testing
+  const handleItemClick = (item) => {
+    console.log('Clicked:', item);
+  };
+  
+  // ✅ Use useCallback for handlers passed to memoized children
+  const handleDelete = useCallback((id) => {
+    setItems(prev => prev.filter(item => item !== id));
+  }, []);
+  
+  // ✅ Name handlers clearly with 'handle' prefix
+  const handleSubmit = () => { /* ... */ };
+  const handleInputChange = () => { /* ... */ };
+  const handleModalClose = () => { /* ... */ };
+  
+  return (
+    <div>
+      {/* ✅ Pass function reference, not call result */}
+      <button onClick={handleSubmit}>Submit</button>
+      
+      {/* ❌ This calls function immediately */}
+      {/* <button onClick={handleSubmit()}>Submit</button> */}
+      
+      {/* ✅ Use arrow function when passing arguments */}
+      {items.map(item => (
+        <button 
+          key={item}
+          onClick={() => handleItemClick(item)}
+        >
+          {item}
+        </button>
+      ))}
+    </div>
+  );
+}
+\`\`\`
+
+## Key Takeaways
+- React events use camelCase (onClick, onChange, onSubmit)
+- Pass function references, not function calls
+- Use arrow functions to pass arguments to handlers
+- Use e.preventDefault() to prevent default browser behavior
+- Use e.stopPropagation() to prevent event bubbling
+- React uses SyntheticEvents for cross-browser compatibility
+- Define handlers outside JSX for cleaner code
+- Name handlers clearly with "handle" prefix`,
+      language: 'javascript'
+    },
+    {
+      id: 'conditional-rendering',
+      title: 'Conditional Rendering',
+      content: `# Conditional Rendering
+
+## Overview
+Conditional rendering in React lets you render different elements or components based on conditions. It works the same way as JavaScript conditions.
+
+## Using if Statements
+
+\`\`\`js
+function Greeting({ isLoggedIn }) {
+  // Early return pattern
+  if (!isLoggedIn) {
+    return <h1>Please log in</h1>;
+  }
+  
+  return <h1>Welcome back!</h1>;
+}
+
+// Multiple conditions
+function Dashboard({ user, isLoading, error }) {
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+  
+  if (error) {
+    return <ErrorMessage message={error} />;
+  }
+  
+  if (!user) {
+    return <LoginPrompt />;
+  }
+  
+  return <UserDashboard user={user} />;
+}
+\`\`\`
+
+## Ternary Operator
+
+\`\`\`js
+function Greeting({ isLoggedIn }) {
+  return (
+    <div>
+      {isLoggedIn ? (
+        <h1>Welcome back!</h1>
+      ) : (
+        <h1>Please log in</h1>
+      )}
+    </div>
+  );
+}
+
+// Inline ternary
+function StatusBadge({ status }) {
+  return (
+    <span className={status === 'active' ? 'badge-green' : 'badge-red'}>
+      {status === 'active' ? 'Active' : 'Inactive'}
+    </span>
+  );
+}
+
+// Nested ternary (use sparingly)
+function UserRole({ role }) {
+  return (
+    <span>
+      {role === 'admin' 
+        ? 'Administrator' 
+        : role === 'editor' 
+          ? 'Editor' 
+          : 'User'}
+    </span>
+  );
+}
+
+// Better alternative for multiple conditions
+function UserRole({ role }) {
+  const roleLabels = {
+    admin: 'Administrator',
+    editor: 'Editor',
+    user: 'User'
+  };
+  
+  return <span>{roleLabels[role] || 'Unknown'}</span>;
+}
+\`\`\`
+
+## Logical AND (&&) Operator
+
+\`\`\`js
+function Notifications({ messages }) {
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      
+      {/* Renders only if condition is true */}
+      {messages.length > 0 && (
+        <NotificationBadge count={messages.length} />
+      )}
+      
+      {/* Multiple conditions */}
+      {isLoggedIn && isAdmin && (
+        <AdminPanel />
+      )}
+      
+      {/* Short message */}
+      {hasError && <p className="error">Something went wrong</p>}
+    </div>
+  );
+}
+
+// ⚠️ GOTCHA: 0 will render!
+function ItemCount({ count }) {
+  return (
+    <div>
+      {/* ❌ If count is 0, it renders "0" */}
+      {count && <span>{count} items</span>}
+      
+      {/* ✅ Explicit boolean conversion */}
+      {count > 0 && <span>{count} items</span>}
+      
+      {/* ✅ Or use ternary */}
+      {count ? <span>{count} items</span> : null}
+    </div>
+  );
+}
+\`\`\`
+
+## Logical OR (||) Operator
+
+\`\`\`js
+function UserGreeting({ name }) {
+  return (
+    <div>
+      {/* Shows fallback if name is falsy */}
+      <h1>Hello, {name || 'Guest'}</h1>
+    </div>
+  );
+}
+
+// For null/undefined only, use nullish coalescing
+function UserGreeting({ name }) {
+  return (
+    <div>
+      {/* Only uses fallback for null/undefined */}
+      <h1>Hello, {name ?? 'Guest'}</h1>
+    </div>
+  );
+}
+\`\`\`
+
+## Null to Render Nothing
+
+\`\`\`js
+function WarningMessage({ warning }) {
+  // Return null to render nothing
+  if (!warning) {
+    return null;
+  }
+  
+  return <div className="warning">{warning}</div>;
+}
+
+// Using ternary
+function Tooltip({ show, text }) {
+  return show ? <div className="tooltip">{text}</div> : null;
+}
+\`\`\`
+
+## Switch Statement Pattern
+
+\`\`\`js
+function StatusMessage({ status }) {
+  // Using switch with component mapping
+  const renderContent = () => {
+    switch (status) {
+      case 'loading':
+        return <LoadingSpinner />;
+      case 'success':
+        return <SuccessMessage />;
+      case 'error':
+        return <ErrorMessage />;
+      default:
+        return <DefaultMessage />;
+    }
+  };
+  
+  return <div className="status">{renderContent()}</div>;
+}
+
+// Object mapping (often cleaner)
+function StatusMessage({ status }) {
+  const statusComponents = {
+    loading: <LoadingSpinner />,
+    success: <SuccessMessage />,
+    error: <ErrorMessage />
+  };
+  
+  return (
+    <div className="status">
+      {statusComponents[status] || <DefaultMessage />}
+    </div>
+  );
+}
+
+// With component references
+function PageContent({ page }) {
+  const pages = {
+    home: HomePage,
+    about: AboutPage,
+    contact: ContactPage
+  };
+  
+  const PageComponent = pages[page] || NotFoundPage;
+  
+  return <PageComponent />;
+}
+\`\`\`
+
+## Conditional Attributes and Styles
+
+\`\`\`js
+function Button({ isDisabled, isLoading, isPrimary }) {
+  return (
+    <button
+      // Conditional attribute
+      disabled={isDisabled || isLoading}
+      
+      // Conditional className
+      className={isPrimary ? 'btn btn-primary' : 'btn btn-secondary'}
+      
+      // Multiple conditional classes
+      className={[
+        'btn',
+        isPrimary && 'btn-primary',
+        isLoading && 'btn-loading',
+        isDisabled && 'btn-disabled'
+      ].filter(Boolean).join(' ')}
+      
+      // Conditional style
+      style={{
+        opacity: isDisabled ? 0.5 : 1,
+        cursor: isDisabled ? 'not-allowed' : 'pointer'
+      }}
+    >
+      {isLoading ? 'Loading...' : 'Submit'}
+    </button>
+  );
+}
+
+// Using a classnames utility (like 'classnames' package)
+import cn from 'classnames';
+
+function Button({ isPrimary, isLoading, isDisabled }) {
+  return (
+    <button
+      className={cn('btn', {
+        'btn-primary': isPrimary,
+        'btn-loading': isLoading,
+        'btn-disabled': isDisabled
+      })}
+    >
+      Submit
+    </button>
+  );
+}
+\`\`\`
+
+## Conditional Rendering with Lists
+
+\`\`\`js
+function TodoList({ todos, filter }) {
+  // Filter items based on condition
+  const filteredTodos = todos.filter(todo => {
+    if (filter === 'all') return true;
+    if (filter === 'active') return !todo.completed;
+    if (filter === 'completed') return todo.completed;
+    return true;
+  });
+  
+  return (
+    <div>
+      {/* Show message if empty */}
+      {filteredTodos.length === 0 ? (
+        <p>No items to display</p>
+      ) : (
+        <ul>
+          {filteredTodos.map(todo => (
+            <li key={todo.id}>
+              {todo.text}
+              {/* Conditional rendering within list items */}
+              {todo.completed && <span>✓</span>}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+\`\`\`
+
+## Render Props Pattern for Conditional Rendering
+
+\`\`\`js
+// Reusable conditional component
+function If({ condition, children, fallback = null }) {
+  return condition ? children : fallback;
+}
+
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+  return (
+    <div>
+      <If condition={isLoggedIn} fallback={<LoginButton />}>
+        <UserProfile />
+        <LogoutButton />
+      </If>
+    </div>
+  );
+}
+
+// Show/Hide component
+function Show({ when, children }) {
+  return when ? children : null;
+}
+
+function App() {
+  const [showDetails, setShowDetails] = useState(false);
+  
+  return (
+    <div>
+      <button onClick={() => setShowDetails(!showDetails)}>
+        Toggle Details
+      </button>
+      <Show when={showDetails}>
+        <Details />
+      </Show>
+    </div>
+  );
+}
+\`\`\`
+
+## Preventing Component Rendering
+
+\`\`\`js
+function Parent({ shouldRender }) {
+  return (
+    <div>
+      {/* Component won't be created if condition is false */}
+      {shouldRender && <ExpensiveComponent />}
+    </div>
+  );
+}
+
+// Using CSS to hide (component still exists in DOM)
+function VisibilityToggle({ isVisible, children }) {
+  return (
+    <div style={{ display: isVisible ? 'block' : 'none' }}>
+      {children}
+    </div>
+  );
+}
+
+// Difference:
+// - Conditional rendering: Component unmounts, state is lost
+// - CSS hiding: Component stays mounted, state is preserved
+\`\`\`
+
+## Common Patterns
+
+\`\`\`js
+// Loading, Error, Data pattern
+function DataDisplay({ data, isLoading, error }) {
+  if (isLoading) return <Spinner />;
+  if (error) return <Error message={error} />;
+  if (!data) return <Empty />;
+  
+  return <DataContent data={data} />;
+}
+
+// Authentication guard
+function ProtectedRoute({ isAuthenticated, children }) {
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+  return children;
+}
+
+// Feature flag
+function Feature({ name, children }) {
+  const features = useFeatureFlags();
+  
+  if (!features[name]) {
+    return null;
+  }
+  
+  return children;
+}
+\`\`\`
+
+## Key Takeaways
+- Use if/else for complex conditions or early returns
+- Use ternary operator for inline if-else
+- Use && for rendering something or nothing
+- Be careful with && and falsy values like 0
+- Return null to render nothing
+- Use object mapping instead of long switch statements
+- Consider readability when choosing a pattern
+- Remember that conditional rendering unmounts components`,
+      language: 'javascript'
+    }
+  ]
+    }
+]
