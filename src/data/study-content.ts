@@ -4437,601 +4437,6335 @@ console.log(result); // 5
   language: 'javascript'
 },
 
-    {
-      id: 'interview-objects',
-      title: 'Objects - Deep Dive',
-      content: `# Objects - Interview Questions
+  {
+  id: 'interview-objects',
+  title: 'Objects - Deep Dive',
+  content: `# Objects - Complete Interview Guide
 
-## Object Creation
-1. Object literal
-2. Constructor function
-3. Object.create()
-4. ES6 Class
+## What is an Object?
+An object is a collection of key-value pairs (properties) where keys are strings (or Symbols) and values can be any type. Objects are the fundamental building blocks of JavaScript - almost everything in JS is an object or behaves like one.
 
-## Important Methods
-- Object.keys(), values(), entries()
-- Object.assign()
-- Object.freeze(), seal()
-- Property descriptors`,
-      codeExample: `// ===== OBJECT CREATION =====
-// 1. Object Literal
-const obj1 = { name: 'John', age: 30 };
+## Why Objects Matter
+Objects are central to JavaScript because:
+- They store and organize data with meaningful keys
+- They represent real-world entities
+- Functions, arrays, dates, regex are all objects
+- They enable OOP patterns
+- They're the basis for JSON data exchange
+- Understanding objects deeply is essential for interviews
 
-// 2. Constructor
-function Person(name) {
+## Object Creation Methods
+1. **Object Literal** - Most common, simple syntax
+2. **Constructor Function** - Pre-ES6 OOP pattern
+3. **Object.create()** - Create with specific prototype
+4. **ES6 Class** - Modern OOP syntax
+5. **new Object()** - Constructor (rarely used)
+6. **Object.assign()** - Create by merging
+
+## Key Concepts
+- Property descriptors (writable, enumerable, configurable)
+- Getters and setters
+- Computed property names
+- Object destructuring
+- Shallow vs deep cloning
+- Object comparison
+- Prototypal inheritance
+- Immutability (freeze, seal)
+
+---
+
+## OBJECT CREATION
+Multiple ways to create objects in JavaScript, each with different use cases.
+
+### Object Literal
+The most common and concise way to create objects.
+
+\`\`\`js
+// ========================================
+// BASIC OBJECT LITERAL
+// ========================================
+const person = {
+  firstName: 'John',
+  lastName: 'Doe',
+  age: 30,
+  isEmployed: true,
+  
+  // Method
+  getFullName() {
+    return \`\${this.firstName} \${this.lastName}\`;
+  }
+};
+
+console.log(person.firstName);     // 'John'
+console.log(person.getFullName()); // 'John Doe'
+
+// Empty object
+const empty = {};
+
+// Nested objects
+const company = {
+  name: 'TechCorp',
+  address: {
+    street: '123 Main St',
+    city: 'New York',
+    country: 'USA'
+  },
+  employees: [
+    { name: 'John', role: 'Developer' },
+    { name: 'Jane', role: 'Designer' }
+  ]
+};
+
+console.log(company.address.city); // 'New York'
+console.log(company.employees[0].name); // 'John'
+
+// ========================================
+// SHORTHAND PROPERTIES (ES6)
+// ========================================
+// When variable name matches property name
+const name = 'John';
+const age = 30;
+const city = 'NYC';
+
+// Old way
+const oldPerson = {
+  name: name,
+  age: age,
+  city: city
+};
+
+// Shorthand (ES6)
+const newPerson = { name, age, city };
+console.log(newPerson); // { name: 'John', age: 30, city: 'NYC' }
+
+// ========================================
+// METHOD SHORTHAND (ES6)
+// ========================================
+// Old way
+const oldObj = {
+  greet: function() {
+    return 'Hello';
+  }
+};
+
+// Shorthand
+const newObj = {
+  greet() {
+    return 'Hello';
+  },
+  
+  // Async method
+  async fetchData() {
+    return await fetch('/api/data');
+  },
+  
+  // Generator method
+  *generateIds() {
+    let id = 1;
+    while (true) yield id++;
+  }
+};
+
+// ========================================
+// COMPUTED PROPERTY NAMES (ES6)
+// ========================================
+const propName = 'dynamicKey';
+const index = 5;
+
+const computed = {
+  [propName]: 'dynamic value',
+  ['key_' + index]: 'key_5 value',
+  ['method_' + propName]() {
+    return this[propName];
+  }
+};
+
+console.log(computed.dynamicKey);     // 'dynamic value'
+console.log(computed.key_5);          // 'key_5 value'
+console.log(computed.method_dynamicKey()); // 'dynamic value'
+
+// Common use case: creating object from array
+const keys = ['a', 'b', 'c'];
+const values = [1, 2, 3];
+
+const fromArrays = keys.reduce((obj, key, i) => {
+  obj[key] = values[i];
+  return obj;
+}, {});
+console.log(fromArrays); // { a: 1, b: 2, c: 3 }
+
+// Symbol as property key
+const uniqueKey = Symbol('unique');
+const withSymbol = {
+  [uniqueKey]: 'hidden value',
+  visible: 'normal value'
+};
+
+console.log(withSymbol[uniqueKey]); // 'hidden value'
+console.log(Object.keys(withSymbol)); // ['visible'] - Symbol not included!
+\`\`\`
+
+### Constructor Function
+Pre-ES6 way to create objects with shared behavior.
+
+\`\`\`js
+// ========================================
+// BASIC CONSTRUCTOR FUNCTION
+// ========================================
+function Person(firstName, lastName, age) {
+  // 'this' refers to the new object being created
+  this.firstName = firstName;
+  this.lastName = lastName;
+  this.age = age;
+  
+  // Method (not recommended - creates new function per instance)
+  // this.greet = function() { return 'Hello, ' + this.firstName; };
+}
+
+// Add methods to prototype (shared across all instances)
+Person.prototype.greet = function() {
+  return \`Hello, I'm \${this.firstName}\`;
+};
+
+Person.prototype.getFullName = function() {
+  return \`\${this.firstName} \${this.lastName}\`;
+};
+
+// Create instances with 'new'
+const john = new Person('John', 'Doe', 30);
+const jane = new Person('Jane', 'Smith', 25);
+
+console.log(john.firstName);     // 'John'
+console.log(john.greet());       // "Hello, I'm John"
+console.log(jane.getFullName()); // 'Jane Smith'
+
+// Methods are shared (same reference)
+console.log(john.greet === jane.greet); // true
+
+// Check instance
+console.log(john instanceof Person); // true
+console.log(john.constructor === Person); // true
+
+// ========================================
+// WHAT 'new' DOES
+// ========================================
+// When you call new Person('John', 'Doe', 30):
+// 1. Creates empty object: {}
+// 2. Sets prototype: Object.setPrototypeOf({}, Person.prototype)
+// 3. Binds 'this' to new object and calls constructor
+// 4. Returns the object (unless constructor returns different object)
+
+function simulateNew(Constructor, ...args) {
+  // Step 1 & 2: Create object with correct prototype
+  const obj = Object.create(Constructor.prototype);
+  
+  // Step 3: Call constructor with 'this' bound to new object
+  const result = Constructor.apply(obj, args);
+  
+  // Step 4: Return object (or constructor's return value if it's an object)
+  return result instanceof Object ? result : obj;
+}
+
+const bob = simulateNew(Person, 'Bob', 'Johnson', 35);
+console.log(bob.greet()); // "Hello, I'm Bob"
+
+// ========================================
+// CONSTRUCTOR WITHOUT 'new' (DANGEROUS)
+// ========================================
+// Without 'new', 'this' is undefined (strict mode) or global object
+const wrong = Person('Wrong', 'Way', 99); // No 'new'!
+console.log(wrong); // undefined
+// In non-strict mode, this pollutes global scope!
+
+// Protection pattern
+function SafePerson(name) {
+  if (!(this instanceof SafePerson)) {
+    return new SafePerson(name);
+  }
   this.name = name;
 }
-const obj2 = new Person('Jane');
 
-// 3. Object.create
-const proto = { greet() { return 'Hello'; } };
-const obj3 = Object.create(proto);
+const safe1 = new SafePerson('John');
+const safe2 = SafePerson('Jane'); // Also works!
+console.log(safe2.name); // 'Jane'
+\`\`\`
 
-// 4. Class
-class User {
-  constructor(name) {
-    this.name = name;
+### Object.create()
+Create an object with a specific prototype.
+
+\`\`\`js
+// ========================================
+// BASIC OBJECT.CREATE
+// ========================================
+// Create object with specified prototype
+const personProto = {
+  greet() {
+    return \`Hello, I'm \${this.name}\`;
+  },
+  introduce() {
+    return \`\${this.name}, age \${this.age}\`;
   }
-}
-const obj4 = new User('Bob');
+};
 
-// ===== OBJECT METHODS =====
-const person = { name: 'John', age: 30, city: 'NYC' };
+const john = Object.create(personProto);
+john.name = 'John';
+john.age = 30;
 
-console.log(Object.keys(person));   // ['name', 'age', 'city']
-console.log(Object.values(person)); // ['John', 30, 'NYC']
-console.log(Object.entries(person)); 
-// [['name', 'John'], ['age', 30], ['city', 'NYC']]
+console.log(john.greet());     // "Hello, I'm John"
+console.log(john.introduce()); // "John, age 30"
 
-// Convert entries back to object
-const entries = [['a', 1], ['b', 2]];
-console.log(Object.fromEntries(entries)); // { a: 1, b: 2 }
+// Check prototype
+console.log(Object.getPrototypeOf(john) === personProto); // true
 
-// ===== OBJECT.ASSIGN =====
-const target = { a: 1 };
-const source1 = { b: 2 };
-const source2 = { c: 3, a: 4 }; // a will be overwritten
-
-Object.assign(target, source1, source2);
-console.log(target); // { a: 4, b: 2, c: 3 }
-
-// Shallow clone
-const clone = Object.assign({}, person);
-
-// ===== SPREAD OPERATOR =====
-const clone2 = { ...person };
-const merged = { ...source1, ...source2 }; // { b: 2, c: 3, a: 4 }
-
-// ===== OBJECT.FREEZE vs SEAL =====
-// freeze - no add, delete, modify
-const frozen = Object.freeze({ name: 'John' });
-frozen.name = 'Jane';     // Fails silently
-frozen.age = 30;          // Fails silently
-delete frozen.name;       // Fails silently
-console.log(frozen);      // { name: 'John' }
-
-// seal - no add, delete; CAN modify
-const sealed = Object.seal({ name: 'John' });
-sealed.name = 'Jane';     // Works!
-sealed.age = 30;          // Fails silently
-delete sealed.name;       // Fails silently
-console.log(sealed);      // { name: 'Jane' }
-
-// Check status
-console.log(Object.isFrozen(frozen)); // true
-console.log(Object.isSealed(sealed)); // true
-
-// ===== PROPERTY DESCRIPTORS =====
-const user = {};
-
-Object.defineProperty(user, 'name', {
-  value: 'John',
-  writable: false,      // Cannot change value
-  enumerable: true,     // Shows in for...in
-  configurable: false   // Cannot delete or reconfigure
-});
-
-user.name = 'Jane'; // Fails silently
-console.log(user.name); // "John"
-
-// Multiple properties
-Object.defineProperties(user, {
-  age: {
-    value: 30,
+// ========================================
+// WITH PROPERTY DESCRIPTORS
+// ========================================
+const jane = Object.create(personProto, {
+  name: {
+    value: 'Jane',
     writable: true,
-    enumerable: true
+    enumerable: true,
+    configurable: true
+  },
+  age: {
+    value: 25,
+    writable: true,
+    enumerable: true,
+    configurable: true
   },
   ssn: {
     value: '123-45-6789',
-    enumerable: false // Hidden from iteration
+    writable: false,
+    enumerable: false,  // Hidden from iteration
+    configurable: false
   }
 });
 
-console.log(Object.keys(user)); // ['name', 'age'] - ssn hidden
+console.log(jane.name);           // 'Jane'
+console.log(jane.ssn);            // '123-45-6789'
+console.log(Object.keys(jane));   // ['name', 'age'] - ssn not included
 
-// Get descriptor
-console.log(Object.getOwnPropertyDescriptor(user, 'name'));
-// { value: 'John', writable: false, enumerable: true, configurable: false }
+// ========================================
+// OBJECT.CREATE(NULL) - Pure Dictionary
+// ========================================
+// No prototype = no inherited properties
+const pureDict = Object.create(null);
+pureDict.key = 'value';
 
-// ===== GETTERS AND SETTERS =====
-const account = {
-  _balance: 1000, // Convention: _ means private
+console.log(pureDict.toString);    // undefined (no inherited methods)
+console.log(pureDict.hasOwnProperty); // undefined
+
+// Safe to use any key
+pureDict.constructor = 'safe';
+pureDict.__proto__ = 'also safe';
+pureDict.toString = 'no collision';
+
+// Useful for:
+// 1. Clean hash maps with user-provided keys
+// 2. Avoiding prototype pollution
+// 3. Slightly faster property access
+
+// Compare with regular object
+const regular = {};
+console.log(regular.toString); // [Function: toString]
+console.log('toString' in regular); // true
+
+console.log(pureDict.toString); // 'no collision' (our value)
+console.log('toString' in pureDict); // true (our property)
+
+// ========================================
+// FACTORY PATTERN WITH OBJECT.CREATE
+// ========================================
+const carProto = {
+  start() {
+    this.running = true;
+    console.log(\`\${this.make} \${this.model} started\`);
+  },
+  stop() {
+    this.running = false;
+    console.log(\`\${this.make} \${this.model} stopped\`);
+  }
+};
+
+function createCar(make, model, year) {
+  const car = Object.create(carProto);
+  car.make = make;
+  car.model = model;
+  car.year = year;
+  car.running = false;
+  return car;
+}
+
+const myCar = createCar('Toyota', 'Camry', 2020);
+myCar.start(); // 'Toyota Camry started'
+\`\`\`
+
+### ES6 Class
+Modern OOP syntax (syntactic sugar over prototypes).
+
+\`\`\`js
+// ========================================
+// BASIC CLASS
+// ========================================
+class Person {
+  // Constructor - called when using 'new'
+  constructor(firstName, lastName, age) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.age = age;
+  }
+  
+  // Instance method (on prototype)
+  greet() {
+    return \`Hello, I'm \${this.firstName}\`;
+  }
+  
+  getFullName() {
+    return \`\${this.firstName} \${this.lastName}\`;
+  }
+  
+  // Getter
+  get info() {
+    return \`\${this.getFullName()}, age \${this.age}\`;
+  }
+  
+  // Setter
+  set info(value) {
+    const [name, age] = value.split(',');
+    const [first, last] = name.trim().split(' ');
+    this.firstName = first;
+    this.lastName = last || '';
+    this.age = parseInt(age) || this.age;
+  }
+  
+  // Static method (on class itself, not instances)
+  static species() {
+    return 'Homo sapiens';
+  }
+  
+  // Static property
+  static count = 0;
+}
+
+const john = new Person('John', 'Doe', 30);
+console.log(john.greet());      // "Hello, I'm John"
+console.log(john.info);         // 'John Doe, age 30'
+john.info = 'Jane Smith, 25';
+console.log(john.firstName);    // 'Jane'
+console.log(Person.species());  // 'Homo sapiens'
+
+// ========================================
+// PRIVATE FIELDS (ES2022)
+// ========================================
+class BankAccount {
+  // Private fields (must be declared)
+  #balance = 0;
+  #accountNumber;
+  #transactions = [];
+  
+  constructor(accountNumber, initialBalance = 0) {
+    this.#accountNumber = accountNumber;
+    this.#balance = initialBalance;
+    this.#log('Account opened');
+  }
+  
+  // Private method
+  #log(message) {
+    this.#transactions.push({
+      message,
+      timestamp: new Date()
+    });
+  }
+  
+  deposit(amount) {
+    if (amount <= 0) throw new Error('Invalid amount');
+    this.#balance += amount;
+    this.#log(\`Deposited \${amount}\`);
+    return this.#balance;
+  }
+  
+  withdraw(amount) {
+    if (amount <= 0) throw new Error('Invalid amount');
+    if (amount > this.#balance) throw new Error('Insufficient funds');
+    this.#balance -= amount;
+    this.#log(\`Withdrew \${amount}\`);
+    return this.#balance;
+  }
   
   get balance() {
-    return '$' + this._balance;
-  },
+    return this.#balance;
+  }
   
-  set balance(value) {
-    if (value < 0) throw new Error('Invalid balance');
-    this._balance = value;
+  // Cannot set balance directly
+  
+  getStatement() {
+    return {
+      account: this.#maskAccount(),
+      balance: this.#balance,
+      transactions: this.#transactions.length
+    };
+  }
+  
+  #maskAccount() {
+    return '****' + String(this.#accountNumber).slice(-4);
+  }
+}
+
+const account = new BankAccount(1234567890, 1000);
+console.log(account.balance);     // 1000
+account.deposit(500);
+console.log(account.balance);     // 1500
+// account.#balance = 1000000;    // SyntaxError - can't access private!
+// console.log(account.#balance); // SyntaxError
+
+// ========================================
+// CLASS INHERITANCE
+// ========================================
+class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+  
+  speak() {
+    console.log(\`\${this.name} makes a sound\`);
+  }
+  
+  static kingdom = 'Animalia';
+}
+
+class Dog extends Animal {
+  constructor(name, breed) {
+    super(name); // Must call super first!
+    this.breed = breed;
+  }
+  
+  speak() {
+    console.log(\`\${this.name} barks: Woof!\`);
+  }
+  
+  fetch() {
+    console.log(\`\${this.name} fetches the ball\`);
+  }
+}
+
+const buddy = new Dog('Buddy', 'Golden Retriever');
+buddy.speak();  // 'Buddy barks: Woof!'
+buddy.fetch();  // 'Buddy fetches the ball'
+
+console.log(buddy instanceof Dog);    // true
+console.log(buddy instanceof Animal); // true
+console.log(Dog.kingdom);             // 'Animalia' (inherited static)
+
+// ========================================
+// CLASS VS CONSTRUCTOR FUNCTION
+// ========================================
+// Classes are syntactic sugar, but with some differences:
+
+// 1. Classes must be called with 'new'
+// Person('John'); // TypeError with class
+
+// 2. Class methods are non-enumerable
+console.log(Object.keys(Person.prototype)); // []
+
+// 3. Classes are always in strict mode
+
+// 4. Classes are not hoisted
+// const p = new MyClass(); // ReferenceError
+// class MyClass {}
+
+// 5. Class methods don't have [[Construct]]
+// new john.greet(); // TypeError
+\`\`\`
+
+---
+
+## OBJECT PROPERTIES
+
+### Accessing Properties
+\`\`\`js
+const person = {
+  firstName: 'John',
+  lastName: 'Doe',
+  'full-name': 'John Doe',  // Needs quotes (invalid identifier)
+  123: 'numeric key',       // Numbers converted to strings
+  [Symbol('id')]: 'symbol key'
+};
+
+// ========================================
+// DOT NOTATION
+// ========================================
+console.log(person.firstName); // 'John'
+
+// Limitations:
+// - Property must be valid identifier
+// - Cannot use variables
+// - Cannot use reserved words as properties (old JS)
+
+// ========================================
+// BRACKET NOTATION
+// ========================================
+console.log(person['firstName']);   // 'John'
+console.log(person['full-name']);   // 'John Doe'
+console.log(person[123]);           // 'numeric key'
+console.log(person['123']);         // 'numeric key' (same)
+
+// Using variables
+const prop = 'lastName';
+console.log(person[prop]);          // 'Doe'
+
+// Dynamic property access
+function getProperty(obj, key) {
+  return obj[key];
+}
+console.log(getProperty(person, 'firstName')); // 'John'
+
+// ========================================
+// OPTIONAL CHAINING (?.)
+// ========================================
+const user = {
+  name: 'John',
+  address: {
+    city: 'New York'
   }
 };
 
-console.log(account.balance); // "$1000"
-account.balance = 2000;
-console.log(account.balance); // "$2000"
+// Without optional chaining (verbose)
+const zip1 = user && user.address && user.address.zipCode;
+console.log(zip1); // undefined
 
-// ===== COMPUTED PROPERTY NAMES =====
-const key = 'dynamic';
-const value = 123;
+// With optional chaining
+const zip2 = user?.address?.zipCode;
+console.log(zip2); // undefined (no error!)
 
-const computed = {
-  [key]: value,
-  ['key_' + 1]: 'one',
-  ['get' + key.charAt(0).toUpperCase() + key.slice(1)]() {
-    return this[key];
-  }
-};
-
-console.log(computed.dynamic);      // 123
-console.log(computed.key_1);        // "one"
-console.log(computed.getDynamic()); // 123
-
-// ===== SHORTHAND PROPERTIES =====
-const name = 'John';
-const age = 30;
-
-const shorthand = { name, age }; // Same as { name: name, age: age }
-
-// Method shorthand
-const methods = {
-  greet() { return 'Hello'; }, // Same as greet: function() {}
-  *generator() { yield 1; },
-  async fetch() { return await Promise.resolve('data'); }
-};
-
-// ===== OPTIONAL CHAINING & NULLISH COALESCING =====
-const data = {
-  user: {
-    profile: {
-      name: 'John'
+// Deeply nested
+const company = {
+  departments: {
+    engineering: {
+      teams: {
+        frontend: {
+          lead: 'John'
+        }
+      }
     }
   }
 };
 
-// Without optional chaining
-const userName = data && data.user && data.user.profile && data.user.profile.name;
+const lead = company?.departments?.engineering?.teams?.frontend?.lead;
+console.log(lead); // 'John'
 
-// With optional chaining
-const userName2 = data?.user?.profile?.name; // "John"
-const missing = data?.user?.address?.city;    // undefined (no error)
+const missing = company?.departments?.sales?.teams?.enterprise?.lead;
+console.log(missing); // undefined (no error)
 
-// Nullish coalescing
-const value1 = null ?? 'default';    // "default"
-const value2 = undefined ?? 'default'; // "default"
-const value3 = 0 ?? 'default';       // 0 (0 is not nullish)
-const value4 = '' ?? 'default';      // '' (empty string is not nullish)
-const value5 = false ?? 'default';   // false
+// With methods
+const obj = {
+  method() { return 'called'; }
+};
 
-// Compare with ||
-const value6 = 0 || 'default';       // "default" (0 is falsy)`,
-      language: 'javascript'
-    },
+console.log(obj.method?.());     // 'called'
+console.log(obj.missing?.());    // undefined (no error)
+
+// With arrays
+const arr = [1, 2, 3];
+console.log(arr?.[0]);           // 1
+console.log(arr?.[100]);         // undefined
+
+// ========================================
+// NULLISH COALESCING (??)
+// ========================================
+// Returns right side only if left is null or undefined
+
+const config = {
+  timeout: 0,
+  retries: null,
+  debug: false,
+  name: ''
+};
+
+// Using || (returns right if left is falsy)
+console.log(config.timeout || 1000);  // 1000 (0 is falsy!)
+console.log(config.debug || true);    // true (false is falsy!)
+console.log(config.name || 'default'); // 'default' ('' is falsy!)
+
+// Using ?? (returns right only if left is null/undefined)
+console.log(config.timeout ?? 1000);  // 0 (0 is not nullish)
+console.log(config.retries ?? 3);     // 3 (null is nullish)
+console.log(config.debug ?? true);    // false (false is not nullish)
+console.log(config.name ?? 'default'); // '' ('' is not nullish)
+console.log(config.missing ?? 'default'); // 'default'
+
+// Common pattern: default values
+function greet(name) {
+  const displayName = name ?? 'Guest';
+  return \`Hello, \${displayName}!\`;
+}
+
+console.log(greet('John')); // 'Hello, John!'
+console.log(greet(null));   // 'Hello, Guest!'
+console.log(greet());       // 'Hello, Guest!'
+
+// Combining with optional chaining
+const data = { user: { settings: { theme: null } } };
+const theme = data?.user?.settings?.theme ?? 'light';
+console.log(theme); // 'light'
+\`\`\`
+
+### Adding, Modifying, and Deleting Properties
+\`\`\`js
+const obj = { a: 1 };
+
+// ========================================
+// ADDING PROPERTIES
+// ========================================
+obj.b = 2;          // Dot notation
+obj['c'] = 3;       // Bracket notation
+obj[Symbol('d')] = 4; // Symbol key
+
+console.log(obj); // { a: 1, b: 2, c: 3, [Symbol(d)]: 4 }
+
+// ========================================
+// MODIFYING PROPERTIES
+// ========================================
+obj.a = 100;
+console.log(obj.a); // 100
+
+// ========================================
+// DELETING PROPERTIES
+// ========================================
+delete obj.b;
+console.log(obj.b); // undefined
+console.log('b' in obj); // false
+
+// Delete returns true even if property doesn't exist
+console.log(delete obj.nonexistent); // true
+
+// Cannot delete non-configurable properties
+const frozen = Object.freeze({ x: 1 });
+console.log(delete frozen.x); // false (strict mode throws)
+
+// Cannot delete variables or function declarations
+// delete someVariable; // Returns false or throws
+
+// ========================================
+// CHECKING PROPERTY EXISTENCE
+// ========================================
+const person = { name: 'John', age: undefined };
+
+// 'in' operator - checks own AND prototype chain
+console.log('name' in person);      // true
+console.log('age' in person);       // true (exists, even if undefined)
+console.log('toString' in person);  // true (inherited)
+console.log('missing' in person);   // false
+
+// hasOwnProperty - checks ONLY own properties
+console.log(person.hasOwnProperty('name'));      // true
+console.log(person.hasOwnProperty('toString')); // false
+
+// Object.hasOwn (ES2022) - safer version
+console.log(Object.hasOwn(person, 'name'));     // true
+console.log(Object.hasOwn(person, 'toString')); // false
+
+// Why Object.hasOwn is safer:
+const badObj = Object.create(null); // No prototype
+badObj.name = 'John';
+// badObj.hasOwnProperty('name'); // TypeError!
+console.log(Object.hasOwn(badObj, 'name')); // true - works!
+
+// Checking for undefined vs non-existent
+const check = { value: undefined };
+console.log(check.value === undefined);    // true
+console.log(check.missing === undefined);  // true (can't distinguish!)
+console.log('value' in check);             // true
+console.log('missing' in check);           // false (distinguishes!)
+\`\`\`
+
+---
+
+## OBJECT METHODS
+
+### Object.keys(), values(), entries()
+\`\`\`js
+const person = {
+  name: 'John',
+  age: 30,
+  city: 'NYC'
+};
+
+// ========================================
+// OBJECT.KEYS() - Get property names
+// ========================================
+const keys = Object.keys(person);
+console.log(keys); // ['name', 'age', 'city']
+
+// Only own enumerable properties
+Object.defineProperty(person, 'ssn', {
+  value: '123',
+  enumerable: false
+});
+console.log(Object.keys(person)); // ['name', 'age', 'city'] - ssn excluded
+
+// Use cases
+// 1. Iterate over properties
+Object.keys(person).forEach(key => {
+  console.log(\`\${key}: \${person[key]}\`);
+});
+
+// 2. Count properties
+console.log(Object.keys(person).length); // 3
+
+// 3. Check if object is empty
+const isEmpty = Object.keys({}).length === 0;
+console.log(isEmpty); // true
+
+// ========================================
+// OBJECT.VALUES() - Get property values
+// ========================================
+const values = Object.values(person);
+console.log(values); // ['John', 30, 'NYC']
+
+// Sum numeric values
+const nums = { a: 1, b: 2, c: 3 };
+const sum = Object.values(nums).reduce((a, b) => a + b, 0);
+console.log(sum); // 6
+
+// ========================================
+// OBJECT.ENTRIES() - Get [key, value] pairs
+// ========================================
+const entries = Object.entries(person);
+console.log(entries);
+// [['name', 'John'], ['age', 30], ['city', 'NYC']]
+
+// Iterate with destructuring
+for (const [key, value] of Object.entries(person)) {
+  console.log(\`\${key}: \${value}\`);
+}
+
+// Transform object
+const doubled = Object.fromEntries(
+  Object.entries(nums).map(([key, value]) => [key, value * 2])
+);
+console.log(doubled); // { a: 2, b: 4, c: 6 }
+
+// Filter object properties
+const filtered = Object.fromEntries(
+  Object.entries(person).filter(([key, value]) => typeof value === 'string')
+);
+console.log(filtered); // { name: 'John', city: 'NYC' }
+
+// ========================================
+// OBJECT.FROMENTRIES() - Create object from entries
+// ========================================
+// Convert Map to object
+const map = new Map([['a', 1], ['b', 2], ['c', 3]]);
+const objFromMap = Object.fromEntries(map);
+console.log(objFromMap); // { a: 1, b: 2, c: 3 }
+
+// Convert URLSearchParams
+const params = new URLSearchParams('name=John&age=30');
+const objFromParams = Object.fromEntries(params);
+console.log(objFromParams); // { name: 'John', age: '30' }
+
+// Convert array of pairs
+const pairs = [['x', 10], ['y', 20], ['z', 30]];
+const objFromPairs = Object.fromEntries(pairs);
+console.log(objFromPairs); // { x: 10, y: 20, z: 30 }
+
+// ========================================
+// ITERATION COMPARISON
+// ========================================
+const obj = { a: 1, b: 2 };
+Object.prototype.inherited = 'inherited';
+
+// for...in (includes inherited enumerable)
+for (const key in obj) {
+  console.log(key); // 'a', 'b', 'inherited'
+}
+
+// for...in with hasOwn check
+for (const key in obj) {
+  if (Object.hasOwn(obj, key)) {
+    console.log(key); // 'a', 'b'
+  }
+}
+
+// Object.keys (only own enumerable)
+Object.keys(obj).forEach(key => {
+  console.log(key); // 'a', 'b'
+});
+
+// Cleanup
+delete Object.prototype.inherited;
+\`\`\`
+
+### Object.assign()
+\`\`\`js
+// ========================================
+// BASIC USAGE - Merge objects
+// ========================================
+const target = { a: 1, b: 2 };
+const source1 = { b: 3, c: 4 };
+const source2 = { c: 5, d: 6 };
+
+// Merges into target (mutates it!)
+const result = Object.assign(target, source1, source2);
+
+console.log(target); // { a: 1, b: 3, c: 5, d: 6 }
+console.log(result); // Same object as target
+console.log(result === target); // true
+
+// Later sources override earlier ones
+// b: 2 → 3 (from source1)
+// c: 4 → 5 (from source2)
+
+// ========================================
+// SHALLOW CLONE
+// ========================================
+const original = { a: 1, b: { c: 2 } };
+
+// Clone (create new object)
+const clone = Object.assign({}, original);
+
+console.log(clone);           // { a: 1, b: { c: 2 } }
+console.log(clone === original); // false (different objects)
+
+// But nested objects are same reference (shallow!)
+console.log(clone.b === original.b); // true!
+clone.b.c = 999;
+console.log(original.b.c);   // 999 (affected!)
+
+// ========================================
+// SPREAD OPERATOR ALTERNATIVE (ES2018)
+// ========================================
+const spreadClone = { ...original };
+const spreadMerge = { ...target, ...source1, ...source2 };
+
+// Spread is often cleaner and doesn't mutate
+const immutableMerge = {
+  ...{ a: 1 },
+  ...{ b: 2 },
+  ...{ a: 3 } // Override a
+};
+console.log(immutableMerge); // { a: 3, b: 2 }
+
+// ========================================
+// ONLY COPIES ENUMERABLE OWN PROPERTIES
+// ========================================
+const withDescriptors = {};
+Object.defineProperty(withDescriptors, 'hidden', {
+  value: 'secret',
+  enumerable: false
+});
+withDescriptors.visible = 'shown';
+
+const copied = Object.assign({}, withDescriptors);
+console.log(copied); // { visible: 'shown' } - hidden not copied!
+
+// ========================================
+// COMMON PATTERNS
+// ========================================
+// Default options
+function configure(options) {
+  const defaults = {
+    timeout: 1000,
+    retries: 3,
+    debug: false
+  };
+  const config = Object.assign({}, defaults, options);
+  return config;
+}
+
+console.log(configure({ timeout: 5000 }));
+// { timeout: 5000, retries: 3, debug: false }
+
+// Spread version (preferred)
+function configureSpread(options) {
+  return {
+    timeout: 1000,
+    retries: 3,
+    debug: false,
+    ...options
+  };
+}
+
+// Adding properties immutably
+const user = { name: 'John', age: 30 };
+const updatedUser = { ...user, age: 31, city: 'NYC' };
+console.log(user);        // { name: 'John', age: 30 } - unchanged
+console.log(updatedUser); // { name: 'John', age: 31, city: 'NYC' }
+
+// Removing properties immutably
+const { age, ...withoutAge } = user;
+console.log(withoutAge); // { name: 'John' }
+\`\`\`
+
+### Object.freeze(), seal(), preventExtensions()
+\`\`\`js
+// ========================================
+// OBJECT.FREEZE - Most restrictive
+// ========================================
+// Cannot: add, delete, or modify properties
+const frozen = Object.freeze({
+  name: 'John',
+  nested: { value: 1 }
+});
+
+frozen.name = 'Jane';     // Fails silently (throws in strict mode)
+frozen.age = 30;          // Fails silently
+delete frozen.name;       // Fails silently
+
+console.log(frozen.name); // 'John' - unchanged
+
+// BUT: Nested objects are NOT frozen (shallow freeze)
+frozen.nested.value = 999;
+console.log(frozen.nested.value); // 999 - changed!
+
+// Check if frozen
+console.log(Object.isFrozen(frozen)); // true
+
+// ========================================
+// DEEP FREEZE (Recursive)
+// ========================================
+function deepFreeze(obj) {
+  // Get all properties including non-enumerable
+  Object.getOwnPropertyNames(obj).forEach(name => {
+    const value = obj[name];
+    if (value && typeof value === 'object') {
+      deepFreeze(value);
+    }
+  });
+  return Object.freeze(obj);
+}
+
+const deepFrozen = deepFreeze({
+  level1: {
+    level2: {
+      level3: { value: 'deep' }
+    }
+  }
+});
+
+deepFrozen.level1.level2.level3.value = 'changed';
+console.log(deepFrozen.level1.level2.level3.value); // 'deep' - unchanged!
+
+// ========================================
+// OBJECT.SEAL - Medium restrictive
+// ========================================
+// Cannot: add or delete properties
+// CAN: modify existing properties
+const sealed = Object.seal({
+  name: 'John',
+  age: 30
+});
+
+sealed.name = 'Jane';     // Works! Can modify
+sealed.age = 31;          // Works!
+sealed.city = 'NYC';      // Fails silently
+delete sealed.name;       // Fails silently
+
+console.log(sealed); // { name: 'Jane', age: 31 }
+
+console.log(Object.isSealed(sealed)); // true
+
+// ========================================
+// OBJECT.PREVENTEXTENSIONS - Least restrictive
+// ========================================
+// Cannot: add new properties
+// CAN: modify and delete existing properties
+const noExtend = Object.preventExtensions({
+  name: 'John',
+  age: 30
+});
+
+noExtend.name = 'Jane';   // Works!
+delete noExtend.age;      // Works!
+noExtend.city = 'NYC';    // Fails silently
+
+console.log(noExtend); // { name: 'Jane' }
+
+console.log(Object.isExtensible(noExtend)); // false
+
+// ========================================
+// COMPARISON TABLE
+// ========================================
+/*
+                    | preventExtensions | seal    | freeze
+--------------------|-------------------|---------|--------
+Add properties      | ❌                | ❌      | ❌
+Delete properties   | ✅                | ❌      | ❌
+Modify properties   | ✅                | ✅      | ❌
+*/
+
+// ========================================
+// USE CASES
+// ========================================
+// 1. Configuration objects
+const CONFIG = Object.freeze({
+  API_URL: 'https://api.example.com',
+  TIMEOUT: 5000,
+  MAX_RETRIES: 3
+});
+
+// 2. Enum-like objects
+const STATUS = Object.freeze({
+  PENDING: 'pending',
+  ACTIVE: 'active',
+  COMPLETED: 'completed'
+});
+
+// 3. Immutable default values
+const DEFAULT_OPTIONS = Object.freeze({
+  enabled: true,
+  timeout: 1000
+});
+
+function process(options) {
+  // Safe to spread frozen object
+  const config = { ...DEFAULT_OPTIONS, ...options };
+  // ...
+}
+\`\`\`
+
+---
+
+## PROPERTY DESCRIPTORS
+Every property has hidden attributes that control its behavior.
+
+\`\`\`js
+// ========================================
+// GET PROPERTY DESCRIPTOR
+// ========================================
+const obj = { name: 'John' };
+
+const descriptor = Object.getOwnPropertyDescriptor(obj, 'name');
+console.log(descriptor);
+/*
+{
+  value: 'John',
+  writable: true,     // Can change value
+  enumerable: true,   // Shows in for...in, Object.keys
+  configurable: true  // Can delete or change descriptor
+}
+*/
+
+// Get all descriptors
+console.log(Object.getOwnPropertyDescriptors(obj));
+
+// ========================================
+// DEFINE PROPERTY
+// ========================================
+const user = {};
+
+Object.defineProperty(user, 'id', {
+  value: 1,
+  writable: false,      // Cannot change
+  enumerable: false,    // Hidden from iteration
+  configurable: false   // Cannot delete or reconfigure
+});
+
+user.id = 2;            // Fails silently
+console.log(user.id);   // 1
+
+delete user.id;         // Fails silently
+console.log(user.id);   // 1
+
+console.log(Object.keys(user)); // [] - id not included
+
+// ========================================
+// WRITABLE
+// ========================================
+const withWritable = {};
+
+Object.defineProperty(withWritable, 'constant', {
+  value: 'CANNOT_CHANGE',
+  writable: false
+});
+
+withWritable.constant = 'NEW_VALUE';
+console.log(withWritable.constant); // 'CANNOT_CHANGE'
+
+// In strict mode, throws TypeError
+// 'use strict';
+// withWritable.constant = 'NEW_VALUE'; // TypeError!
+
+// ========================================
+// ENUMERABLE
+// ========================================
+const withEnumerable = { visible: true };
+
+Object.defineProperty(withEnumerable, 'hidden', {
+  value: 'secret',
+  enumerable: false
+});
+
+console.log(Object.keys(withEnumerable));      // ['visible']
+console.log(Object.values(withEnumerable));    // [true]
+console.log(JSON.stringify(withEnumerable));   // '{"visible":true}'
+
+// But still accessible directly
+console.log(withEnumerable.hidden);            // 'secret'
+
+// for...in also skips non-enumerable
+for (const key in withEnumerable) {
+  console.log(key); // Only 'visible'
+}
+
+// ========================================
+// CONFIGURABLE
+// ========================================
+const withConfigurable = {};
+
+Object.defineProperty(withConfigurable, 'locked', {
+  value: 'initial',
+  writable: true,
+  configurable: false
+});
+
+// Can still write (writable is true)
+withConfigurable.locked = 'changed';
+console.log(withConfigurable.locked); // 'changed'
+
+// Cannot delete
+delete withConfigurable.locked; // Fails
+console.log(withConfigurable.locked); // 'changed'
+
+// Cannot redefine (even to same config!)
+// Object.defineProperty(withConfigurable, 'locked', {
+//   writable: false // TypeError: Cannot redefine property
+// });
+
+// ========================================
+// DEFINE MULTIPLE PROPERTIES
+// ========================================
+const product = {};
+
+Object.defineProperties(product, {
+  id: {
+    value: 1,
+    writable: false,
+    enumerable: true
+  },
+  name: {
+    value: 'Widget',
+    writable: true,
+    enumerable: true
+  },
+  _price: {
+    value: 99.99,
+    writable: true,
+    enumerable: false // "Private"
+  }
+});
+
+// ========================================
+// ACCESSOR DESCRIPTORS (Getters/Setters)
+// ========================================
+const account = {
+  _balance: 0
+};
+
+Object.defineProperty(account, 'balance', {
+  get() {
+    return '$' + this._balance.toFixed(2);
+  },
+  set(value) {
+    if (typeof value !== 'number' || value < 0) {
+      throw new Error('Invalid balance');
+    }
+    this._balance = value;
+  },
+  enumerable: true,
+  configurable: true
+});
+
+account.balance = 1000;
+console.log(account.balance); // '$1000.00'
+// account.balance = -100; // Error: Invalid balance
+
+// Accessor descriptor structure:
+/*
+{
+  get: function,       // Getter function
+  set: function,       // Setter function
+  enumerable: boolean,
+  configurable: boolean
+  // NO 'value' or 'writable' - mutually exclusive!
+}
+*/
+
+// ========================================
+// COPY WITH DESCRIPTORS
+// ========================================
+// Object.assign doesn't preserve descriptors
+const original = {};
+Object.defineProperty(original, 'readonly', {
+  value: 'cannot change',
+  writable: false
+});
+
+const normalCopy = Object.assign({}, original);
+console.log(Object.getOwnPropertyDescriptor(normalCopy, 'readonly'));
+// { value: 'cannot change', writable: true, ... } - writable changed!
+
+// Use getOwnPropertyDescriptors for full copy
+const fullCopy = Object.defineProperties(
+  {},
+  Object.getOwnPropertyDescriptors(original)
+);
+console.log(Object.getOwnPropertyDescriptor(fullCopy, 'readonly'));
+// { value: 'cannot change', writable: false, ... } - preserved!
+\`\`\`
+
+---
+
+## GETTERS AND SETTERS
+
+\`\`\`js
+// ========================================
+// OBJECT LITERAL SYNTAX
+// ========================================
+const person = {
+  firstName: 'John',
+  lastName: 'Doe',
+  
+  // Getter - accessed like a property
+  get fullName() {
+    return \`\${this.firstName} \${this.lastName}\`;
+  },
+  
+  // Setter - assigned like a property
+  set fullName(value) {
+    const parts = value.split(' ');
+    this.firstName = parts[0] || '';
+    this.lastName = parts[1] || '';
+  }
+};
+
+// Use getter (no parentheses!)
+console.log(person.fullName); // 'John Doe'
+
+// Use setter
+person.fullName = 'Jane Smith';
+console.log(person.firstName); // 'Jane'
+console.log(person.lastName);  // 'Smith'
+
+// ========================================
+// CLASS SYNTAX
+// ========================================
+class Temperature {
+  constructor(celsius) {
+    this._celsius = celsius;
+  }
+  
+  // Getter for celsius
+  get celsius() {
+    return this._celsius;
+  }
+  
+  // Setter for celsius
+  set celsius(value) {
+    if (value < -273.15) {
+      throw new Error('Temperature below absolute zero!');
+    }
+    this._celsius = value;
+  }
+  
+  // Computed property - fahrenheit from celsius
+  get fahrenheit() {
+    return this._celsius * 9/5 + 32;
+  }
+  
+  set fahrenheit(value) {
+    this._celsius = (value - 32) * 5/9;
+  }
+  
+  get kelvin() {
+    return this._celsius + 273.15;
+  }
+  
+  set kelvin(value) {
+    this._celsius = value - 273.15;
+  }
+}
+
+const temp = new Temperature(25);
+console.log(temp.celsius);    // 25
+console.log(temp.fahrenheit); // 77
+console.log(temp.kelvin);     // 298.15
+
+temp.fahrenheit = 100;
+console.log(temp.celsius);    // 37.78
+
+// temp.celsius = -300; // Error!
+
+// ========================================
+// LAZY CALCULATION / CACHING
+// ========================================
+const data = {
+  _items: [1, 2, 3, 4, 5],
+  _sumCache: null,
+  
+  get sum() {
+    if (this._sumCache === null) {
+      console.log('Calculating sum...');
+      this._sumCache = this._items.reduce((a, b) => a + b, 0);
+    }
+    return this._sumCache;
+  },
+  
+  addItem(item) {
+    this._items.push(item);
+    this._sumCache = null; // Invalidate cache
+  }
+};
+
+console.log(data.sum); // "Calculating sum..." 15
+console.log(data.sum); // 15 (cached, no log)
+data.addItem(6);
+console.log(data.sum); // "Calculating sum..." 21
+
+// ========================================
+// VALIDATION
+// ========================================
+const user = {
+  _email: '',
+  
+  get email() {
+    return this._email;
+  },
+  
+  set email(value) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      throw new Error('Invalid email format');
+    }
+    this._email = value.toLowerCase();
+  }
+};
+
+user.email = 'JOHN@Example.COM';
+console.log(user.email); // 'john@example.com'
+// user.email = 'invalid'; // Error!
+
+// ========================================
+// DERIVED PROPERTIES
+// ========================================
+const rectangle = {
+  width: 10,
+  height: 5,
+  
+  get area() {
+    return this.width * this.height;
+  },
+  
+  get perimeter() {
+    return 2 * (this.width + this.height);
+  },
+  
+  get diagonal() {
+    return Math.sqrt(this.width ** 2 + this.height ** 2);
+  }
+};
+
+console.log(rectangle.area);      // 50
+console.log(rectangle.perimeter); // 30
+console.log(rectangle.diagonal);  // 11.18
+
+rectangle.width = 20;
+console.log(rectangle.area);      // 100 (automatically updated)
+
+// ========================================
+// PRIVATE BACKING FIELD WITH #
+// ========================================
+class Circle {
+  #radius;
+  
+  constructor(radius) {
+    this.#radius = radius;
+  }
+  
+  get radius() {
+    return this.#radius;
+  }
+  
+  set radius(value) {
+    if (value <= 0) throw new Error('Radius must be positive');
+    this.#radius = value;
+  }
+  
+  get diameter() {
+    return this.#radius * 2;
+  }
+  
+  get area() {
+    return Math.PI * this.#radius ** 2;
+  }
+  
+  get circumference() {
+    return 2 * Math.PI * this.#radius;
+  }
+}
+
+const circle = new Circle(5);
+console.log(circle.radius);       // 5
+console.log(circle.diameter);     // 10
+console.log(circle.area);         // 78.54
+// circle.#radius = 10;           // SyntaxError - truly private!
+\`\`\`
+
+---
+
+## OBJECT CLONING
+
+### Shallow Clone
+\`\`\`js
+const original = {
+  name: 'John',
+  age: 30,
+  address: {
+    city: 'NYC',
+    zip: '10001'
+  },
+  hobbies: ['reading', 'gaming']
+};
+
+// ========================================
+// METHOD 1: Spread operator (ES2018)
+// ========================================
+const clone1 = { ...original };
+
+console.log(clone1);           // Same structure
+console.log(clone1 === original); // false (different object)
+
+// But nested objects are same reference!
+console.log(clone1.address === original.address); // true!
+clone1.address.city = 'LA';
+console.log(original.address.city); // 'LA' - affected!
+
+// ========================================
+// METHOD 2: Object.assign
+// ========================================
+const clone2 = Object.assign({}, original);
+
+// Same shallow behavior
+console.log(clone2.hobbies === original.hobbies); // true
+
+// ========================================
+// METHOD 3: Object.fromEntries + Object.entries
+// ========================================
+const clone3 = Object.fromEntries(Object.entries(original));
+
+// Also shallow
+console.log(clone3.address === original.address); // true
+
+// ========================================
+// WHEN SHALLOW IS FINE
+// ========================================
+// When object has only primitives
+const simple = { a: 1, b: 'two', c: true };
+const simpleClone = { ...simple };
+simpleClone.a = 999;
+console.log(simple.a); // 1 - unaffected
+\`\`\`
+
+### Deep Clone
+\`\`\`js
+const original = {
+  name: 'John',
+  nested: {
+    deep: {
+      value: 'deeply nested'
+    }
+  },
+  array: [1, [2, 3], { four: 4 }],
+  date: new Date('2024-01-01'),
+  regex: /test/gi,
+  fn: function() { return 'hello'; }
+};
+
+// ========================================
+// METHOD 1: JSON.parse/stringify (Limited!)
+// ========================================
+const jsonClone = JSON.parse(JSON.stringify(original));
+
+console.log(jsonClone.nested.deep === original.nested.deep); // false - cloned!
+
+// But has major limitations:
+console.log(jsonClone.date);   // String! Not Date object
+console.log(jsonClone.regex);  // {} Empty object!
+console.log(jsonClone.fn);     // undefined! Functions lost!
+
+// Also fails with:
+// - undefined (becomes null in arrays, omitted in objects)
+// - Symbols (omitted)
+// - Infinity, NaN (become null)
+// - Circular references (throws error!)
+
+// ========================================
+// METHOD 2: structuredClone (Modern - Node 17+, browsers)
+// ========================================
+const structuredCloneObj = {
+  name: 'John',
+  nested: { value: 1 },
+  array: [1, 2, 3],
+  date: new Date(),
+  map: new Map([['a', 1]]),
+  set: new Set([1, 2, 3]),
+  buffer: new ArrayBuffer(8)
+};
+
+const structuredCopy = structuredClone(structuredCloneObj);
+
+console.log(structuredCopy.date instanceof Date);   // true!
+console.log(structuredCopy.map instanceof Map);     // true!
+console.log(structuredCopy.nested === structuredCloneObj.nested); // false
+
+// But still doesn't clone:
+// - Functions
+// - DOM nodes
+// - Property descriptors
+// - Prototype chain
+
+// ========================================
+// METHOD 3: Custom deep clone (Recursive)
+// ========================================
+function deepClone(obj, seen = new WeakMap()) {
+  // Handle primitives and null
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  
+  // Handle circular references
+  if (seen.has(obj)) {
+    return seen.get(obj);
+  }
+  
+  // Handle Date
+  if (obj instanceof Date) {
+    return new Date(obj.getTime());
+  }
+  
+  // Handle RegExp
+  if (obj instanceof RegExp) {
+    return new RegExp(obj.source, obj.flags);
+  }
+  
+  // Handle Array
+  if (Array.isArray(obj)) {
+    const arrCopy = [];
+    seen.set(obj, arrCopy);
+    obj.forEach((item, index) => {
+      arrCopy[index] = deepClone(item, seen);
+    });
+    return arrCopy;
+  }
+  
+  // Handle Map
+  if (obj instanceof Map) {
+    const mapCopy = new Map();
+    seen.set(obj, mapCopy);
+    obj.forEach((value, key) => {
+      mapCopy.set(deepClone(key, seen), deepClone(value, seen));
+    });
+    return mapCopy;
+  }
+  
+  // Handle Set
+  if (obj instanceof Set) {
+    const setCopy = new Set();
+    seen.set(obj, setCopy);
+    obj.forEach(value => {
+      setCopy.add(deepClone(value, seen));
+    });
+    return setCopy;
+  }
+  
+  // Handle Object
+  const objCopy = Object.create(Object.getPrototypeOf(obj));
+  seen.set(obj, objCopy);
+  
+  // Copy all own properties with their descriptors
+  const descriptors = Object.getOwnPropertyDescriptors(obj);
+  for (const key of Reflect.ownKeys(descriptors)) {
+    const descriptor = descriptors[key];
+    if ('value' in descriptor) {
+      descriptor.value = deepClone(descriptor.value, seen);
+    }
+    Object.defineProperty(objCopy, key, descriptor);
+  }
+  
+  return objCopy;
+}
+
+// Test with circular reference
+const circular = { name: 'circular' };
+circular.self = circular;
+
+const circularClone = deepClone(circular);
+console.log(circularClone.self === circularClone); // true (handled!)
+
+// ========================================
+// LIBRARY OPTIONS
+// ========================================
+// lodash.cloneDeep
+// import cloneDeep from 'lodash/cloneDeep';
+// const clone = cloneDeep(original);
+
+// Ramda
+// import { clone } from 'ramda';
+// const clone = clone(original);
+\`\`\`
+
+---
+
+## OBJECT COMPARISON
+
+\`\`\`js
+// ========================================
+// REFERENCE COMPARISON
+// ========================================
+const obj1 = { a: 1 };
+const obj2 = { a: 1 };
+const obj3 = obj1;
+
+console.log(obj1 === obj2); // false (different references)
+console.log(obj1 === obj3); // true (same reference)
+console.log(obj1 == obj2);  // false (== also compares reference)
+
+// ========================================
+// OBJECT.IS (Similar to ===, but handles edge cases)
+// ========================================
+console.log(Object.is(obj1, obj2)); // false
+console.log(Object.is(obj1, obj3)); // true
+
+// Difference from ===:
+console.log(NaN === NaN);           // false
+console.log(Object.is(NaN, NaN));   // true
+
+console.log(0 === -0);              // true
+console.log(Object.is(0, -0));      // false
+
+// ========================================
+// SHALLOW EQUALITY
+// ========================================
+function shallowEqual(obj1, obj2) {
+  // Same reference?
+  if (obj1 === obj2) return true;
+  
+  // Different types or null?
+  if (typeof obj1 !== 'object' || typeof obj2 !== 'object') return false;
+  if (obj1 === null || obj2 === null) return false;
+  
+  // Different number of keys?
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  if (keys1.length !== keys2.length) return false;
+  
+  // All keys and values equal?
+  for (const key of keys1) {
+    if (!keys2.includes(key) || obj1[key] !== obj2[key]) {
+      return false;
+    }
+  }
+  
+  return true;
+}
+
+console.log(shallowEqual({ a: 1, b: 2 }, { a: 1, b: 2 }));     // true
+console.log(shallowEqual({ a: 1, b: 2 }, { a: 1, b: 3 }));     // false
+console.log(shallowEqual({ a: { x: 1 } }, { a: { x: 1 } }));   // false (nested)
+
+// ========================================
+// DEEP EQUALITY
+// ========================================
+function deepEqual(obj1, obj2) {
+  // Same reference?
+  if (obj1 === obj2) return true;
+  
+  // Handle null
+  if (obj1 === null || obj2 === null) return obj1 === obj2;
+  
+  // Different types?
+  if (typeof obj1 !== typeof obj2) return false;
+  
+  // Primitives
+  if (typeof obj1 !== 'object') return obj1 === obj2;
+  
+  // Arrays
+  if (Array.isArray(obj1) !== Array.isArray(obj2)) return false;
+  if (Array.isArray(obj1)) {
+    if (obj1.length !== obj2.length) return false;
+    return obj1.every((item, index) => deepEqual(item, obj2[index]));
+  }
+  
+  // Objects
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  
+  if (keys1.length !== keys2.length) return false;
+  
+  return keys1.every(key => 
+    keys2.includes(key) && deepEqual(obj1[key], obj2[key])
+  );
+}
+
+const a = { x: 1, y: { z: [1, 2, 3] } };
+const b = { x: 1, y: { z: [1, 2, 3] } };
+const c = { x: 1, y: { z: [1, 2, 4] } };
+
+console.log(deepEqual(a, b)); // true
+console.log(deepEqual(a, c)); // false
+
+// ========================================
+// JSON.stringify COMPARISON (Quick & Dirty)
+// ========================================
+// Only works if:
+// - Key order is same
+// - No undefined, functions, Symbols
+// - No circular references
+
+const simple1 = { a: 1, b: 2 };
+const simple2 = { a: 1, b: 2 };
+
+console.log(JSON.stringify(simple1) === JSON.stringify(simple2)); // true
+
+// Gotcha: key order matters!
+const ordered1 = { a: 1, b: 2 };
+const ordered2 = { b: 2, a: 1 };
+console.log(JSON.stringify(ordered1) === JSON.stringify(ordered2)); // false!
+
+// Fix: sort keys
+const sortedStringify = (obj) => 
+  JSON.stringify(obj, Object.keys(obj).sort());
+
+console.log(sortedStringify(ordered1) === sortedStringify(ordered2)); // true
+\`\`\`
+
+---
+
+## OBJECT ITERATION
+
+\`\`\`js
+const person = {
+  name: 'John',
+  age: 30,
+  city: 'NYC'
+};
+
+// Add non-enumerable property
+Object.defineProperty(person, 'ssn', {
+  value: '123-45-6789',
+  enumerable: false
+});
+
+// Add inherited property
+Object.prototype.inherited = 'from prototype';
+
+// ========================================
+// FOR...IN (Own + Inherited Enumerable)
+// ========================================
+console.log('for...in:');
+for (const key in person) {
+  console.log(key);
+  // name, age, city, inherited (not ssn - non-enumerable)
+}
+
+// Filter to own properties only
+console.log('for...in with hasOwn:');
+for (const key in person) {
+  if (Object.hasOwn(person, key)) {
+    console.log(key); // name, age, city
+  }
+}
+
+// ========================================
+// OBJECT.KEYS (Own Enumerable Only)
+// ========================================
+console.log('Object.keys:', Object.keys(person));
+// ['name', 'age', 'city']
+
+for (const key of Object.keys(person)) {
+  console.log(\`\${key}: \${person[key]}\`);
+}
+
+// ========================================
+// OBJECT.VALUES (Own Enumerable Values)
+// ========================================
+console.log('Object.values:', Object.values(person));
+// ['John', 30, 'NYC']
+
+// ========================================
+// OBJECT.ENTRIES (Own Enumerable [key, value])
+// ========================================
+console.log('Object.entries:', Object.entries(person));
+// [['name', 'John'], ['age', 30], ['city', 'NYC']]
+
+for (const [key, value] of Object.entries(person)) {
+  console.log(\`\${key}: \${value}\`);
+}
+
+// ========================================
+// OBJECT.GETOWNPROPERTYNAMES (Own, including non-enumerable)
+// ========================================
+console.log('getOwnPropertyNames:', Object.getOwnPropertyNames(person));
+// ['name', 'age', 'city', 'ssn'] - includes ssn!
+
+// ========================================
+// OBJECT.GETOWNPROPERTYSYMBOLS (Own Symbol keys)
+// ========================================
+const sym = Symbol('id');
+person[sym] = 42;
+
+console.log('getOwnPropertySymbols:', Object.getOwnPropertySymbols(person));
+// [Symbol(id)]
+
+// ========================================
+// REFLECT.OWNKEYS (All Own Keys - strings + symbols)
+// ========================================
+console.log('Reflect.ownKeys:', Reflect.ownKeys(person));
+// ['name', 'age', 'city', 'ssn', Symbol(id)]
+
+// ========================================
+// COMPARISON TABLE
+// ========================================
+/*
+Method                      | Own | Inherited | Enumerable | Non-enum | Symbol
+----------------------------|-----|-----------|------------|----------|-------
+for...in                    | ✅  | ✅        | ✅         | ❌       | ❌
+Object.keys()               | ✅  | ❌        | ✅         | ❌       | ❌
+Object.values()             | ✅  | ❌        | ✅         | ❌       | ❌
+Object.entries()            | ✅  | ❌        | ✅         | ❌       | ❌
+Object.getOwnPropertyNames()| ✅  | ❌        | ✅         | ✅       | ❌
+Object.getOwnPropertySymbols()| ✅| ❌        | ✅         | ✅       | ✅
+Reflect.ownKeys()           | ✅  | ❌        | ✅         | ✅       | ✅
+*/
+
+// Cleanup
+delete Object.prototype.inherited;
+\`\`\`
+
+---
+
+## OBJECT DESTRUCTURING
+
+\`\`\`js
+// ========================================
+// BASIC DESTRUCTURING
+// ========================================
+const person = {
+  firstName: 'John',
+  lastName: 'Doe',
+  age: 30,
+  city: 'NYC'
+};
+
+// Extract specific properties
+const { firstName, lastName } = person;
+console.log(firstName); // 'John'
+console.log(lastName);  // 'Doe'
+
+// ========================================
+// RENAMING (Aliases)
+// ========================================
+const { firstName: fName, lastName: lName } = person;
+console.log(fName); // 'John'
+console.log(lName); // 'Doe'
+
+// ========================================
+// DEFAULT VALUES
+// ========================================
+const { firstName: first, country = 'USA' } = person;
+console.log(first);   // 'John'
+console.log(country); // 'USA' (default, not in person)
+
+// Default only used if undefined (not null)
+const { value = 'default' } = { value: null };
+console.log(value); // null (not 'default')
+
+// ========================================
+// NESTED DESTRUCTURING
+// ========================================
+const company = {
+  name: 'TechCorp',
+  address: {
+    street: '123 Main St',
+    city: 'New York',
+    coords: {
+      lat: 40.7128,
+      lng: -74.0060
+    }
+  }
+};
+
+const { 
+  name: companyName,
+  address: { 
+    city,
+    coords: { lat, lng }
+  }
+} = company;
+
+console.log(companyName); // 'TechCorp'
+console.log(city);        // 'New York'
+console.log(lat);         // 40.7128
+
+// ========================================
+// REST PATTERN
+// ========================================
+const { firstName: fname, ...rest } = person;
+console.log(fname); // 'John'
+console.log(rest);  // { lastName: 'Doe', age: 30, city: 'NYC' }
+
+// Useful for removing properties
+const { password, ...safeUser } = { 
+  name: 'John', 
+  password: 'secret123' 
+};
+console.log(safeUser); // { name: 'John' }
+
+// ========================================
+// FUNCTION PARAMETERS
+// ========================================
+function greet({ firstName, lastName, greeting = 'Hello' }) {
+  return \`\${greeting}, \${firstName} \${lastName}!\`;
+}
+
+console.log(greet(person)); // 'Hello, John Doe!'
+console.log(greet({ firstName: 'Jane', lastName: 'Smith', greeting: 'Hi' }));
+// 'Hi, Jane Smith!'
+
+// With default for entire object
+function configure({ timeout = 1000, retries = 3 } = {}) {
+  return { timeout, retries };
+}
+
+console.log(configure());              // { timeout: 1000, retries: 3 }
+console.log(configure({ timeout: 5000 })); // { timeout: 5000, retries: 3 }
+
+// ========================================
+// COMPUTED PROPERTY NAMES
+// ========================================
+const key = 'dynamicKey';
+const { [key]: value } = { dynamicKey: 'found it!' };
+console.log(value); // 'found it!'
+
+// ========================================
+// COMBINING WITH ARRAYS
+// ========================================
+const data = {
+  users: [
+    { id: 1, name: 'John' },
+    { id: 2, name: 'Jane' }
+  ]
+};
+
+const { users: [firstUser, secondUser] } = data;
+console.log(firstUser);  // { id: 1, name: 'John' }
+console.log(secondUser); // { id: 2, name: 'Jane' }
+
+const { users: [{ name: firstName1 }, { name: firstName2 }] } = data;
+console.log(firstName1); // 'John'
+console.log(firstName2); // 'Jane'
+
+// ========================================
+// SWAPPING VARIABLES
+// ========================================
+let a = 1, b = 2;
+[a, b] = [b, a];
+console.log(a, b); // 2, 1
+
+// ========================================
+// ASSIGNMENT TO EXISTING VARIABLES
+// ========================================
+let x, y;
+// Need parentheses when not declaring!
+({ x, y } = { x: 10, y: 20 });
+console.log(x, y); // 10, 20
+\`\`\`
+
+---
+
+## COMMON PATTERNS AND UTILITIES
+
+### Object Utility Functions
+\`\`\`js
+// ========================================
+// PICK - Select specific properties
+// ========================================
+function pick(obj, keys) {
+  return keys.reduce((result, key) => {
+    if (key in obj) {
+      result[key] = obj[key];
+    }
+    return result;
+  }, {});
+}
+
+const user = { id: 1, name: 'John', email: 'john@test.com', password: 'secret' };
+const publicUser = pick(user, ['id', 'name', 'email']);
+console.log(publicUser); // { id: 1, name: 'John', email: 'john@test.com' }
+
+// ========================================
+// OMIT - Exclude specific properties
+// ========================================
+function omit(obj, keys) {
+  const keysToOmit = new Set(keys);
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key]) => !keysToOmit.has(key))
+  );
+}
+
+const safeUser = omit(user, ['password']);
+console.log(safeUser); // { id: 1, name: 'John', email: 'john@test.com' }
+
+// ========================================
+// GET NESTED VALUE SAFELY
+// ========================================
+function get(obj, path, defaultValue = undefined) {
+  const keys = path.replace(/\[(\d+)\]/g, '.$1').split('.');
+  let result = obj;
+  
+  for (const key of keys) {
+    if (result == null) return defaultValue;
+    result = result[key];
+  }
+  
+  return result === undefined ? defaultValue : result;
+}
+
+const data = { 
+  users: [
+    { name: 'John', address: { city: 'NYC' } }
+  ] 
+};
+
+console.log(get(data, 'users[0].name'));           // 'John'
+console.log(get(data, 'users[0].address.city'));   // 'NYC'
+console.log(get(data, 'users[0].address.zip'));    // undefined
+console.log(get(data, 'users[0].address.zip', 'N/A')); // 'N/A'
+console.log(get(data, 'users[5].name'));           // undefined
+
+// ========================================
+// SET NESTED VALUE
+// ========================================
+function set(obj, path, value) {
+  const keys = path.replace(/\[(\d+)\]/g, '.$1').split('.');
+  let current = obj;
+  
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    const nextKey = keys[i + 1];
+    
+    if (!(key in current)) {
+      // Create array or object based on next key
+      current[key] = /^\d+$/.test(nextKey) ? [] : {};
+    }
+    current = current[key];
+  }
+  
+  current[keys[keys.length - 1]] = value;
+  return obj;
+}
+
+const obj = {};
+set(obj, 'a.b.c', 42);
+console.log(obj); // { a: { b: { c: 42 } } }
+
+set(obj, 'users[0].name', 'John');
+console.log(obj); // { a: { b: { c: 42 } }, users: [{ name: 'John' }] }
+
+// ========================================
+// MERGE DEEP
+// ========================================
+function mergeDeep(target, ...sources) {
+  if (!sources.length) return target;
+  const source = sources.shift();
+  
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (isObject(source[key])) {
+        if (!target[key]) Object.assign(target, { [key]: {} });
+        mergeDeep(target[key], source[key]);
+      } else {
+        Object.assign(target, { [key]: source[key] });
+      }
+    }
+  }
+  
+  return mergeDeep(target, ...sources);
+}
+
+function isObject(item) {
+  return item && typeof item === 'object' && !Array.isArray(item);
+}
+
+const merged = mergeDeep(
+  { a: 1, b: { c: 2, d: 3 } },
+  { b: { c: 20, e: 4 }, f: 5 }
+);
+console.log(merged); // { a: 1, b: { c: 20, d: 3, e: 4 }, f: 5 }
+
+// ========================================
+// FLATTEN OBJECT
+// ========================================
+function flatten(obj, prefix = '') {
+  return Object.keys(obj).reduce((acc, key) => {
+    const pre = prefix.length ? prefix + '.' : '';
+    
+    if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+      Object.assign(acc, flatten(obj[key], pre + key));
+    } else {
+      acc[pre + key] = obj[key];
+    }
+    
+    return acc;
+  }, {});
+}
+
+const nested = {
+  a: 1,
+  b: {
+    c: 2,
+    d: {
+      e: 3
+    }
+  }
+};
+
+console.log(flatten(nested));
+// { 'a': 1, 'b.c': 2, 'b.d.e': 3 }
+
+// ========================================
+// UNFLATTEN OBJECT
+// ========================================
+function unflatten(obj) {
+  const result = {};
+  
+  for (const key in obj) {
+    const keys = key.split('.');
+    let current = result;
+    
+    for (let i = 0; i < keys.length - 1; i++) {
+      const k = keys[i];
+      current[k] = current[k] || {};
+      current = current[k];
+    }
+    
+    current[keys[keys.length - 1]] = obj[key];
+  }
+  
+  return result;
+}
+
+const flat = { 'a': 1, 'b.c': 2, 'b.d.e': 3 };
+console.log(unflatten(flat));
+// { a: 1, b: { c: 2, d: { e: 3 } } }
+
+// ========================================
+// INVERT OBJECT
+// ========================================
+function invert(obj) {
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => [value, key])
+  );
+}
+
+const original = { a: 1, b: 2, c: 3 };
+console.log(invert(original)); // { 1: 'a', 2: 'b', 3: 'c' }
+
+// ========================================
+// MAP OBJECT VALUES
+// ========================================
+function mapValues(obj, fn) {
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => [key, fn(value, key, obj)])
+  );
+}
+
+const prices = { apple: 1, banana: 2, orange: 3 };
+const doubled = mapValues(prices, v => v * 2);
+console.log(doubled); // { apple: 2, banana: 4, orange: 6 }
+
+// ========================================
+// FILTER OBJECT
+// ========================================
+function filterObject(obj, predicate) {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key, value]) => predicate(value, key, obj))
+  );
+}
+
+const nums = { a: 1, b: 2, c: 3, d: 4 };
+const evens = filterObject(nums, v => v % 2 === 0);
+console.log(evens); // { b: 2, d: 4 }
+\`\`\`
+
+---
+
+## COMMON INTERVIEW QUESTIONS
+
+### Q1: What's the difference between Object.freeze() and Object.seal()?
+\`\`\`js
+// freeze: Cannot add, delete, OR modify properties
+const frozen = Object.freeze({ a: 1 });
+frozen.a = 2;    // No effect
+frozen.b = 2;    // No effect
+delete frozen.a; // No effect
+console.log(frozen); // { a: 1 }
+
+// seal: Cannot add or delete, but CAN modify
+const sealed = Object.seal({ a: 1 });
+sealed.a = 2;    // Works!
+sealed.b = 2;    // No effect
+delete sealed.a; // No effect
+console.log(sealed); // { a: 2 }
+
+// Both are shallow - nested objects are not affected
+\`\`\`
+
+### Q2: How do you deep clone an object?
+\`\`\`js
+// Simple solution (limitations with functions, undefined, dates, etc.)
+const clone = JSON.parse(JSON.stringify(original));
+
+// Modern solution (Node 17+, modern browsers)
+const clone = structuredClone(original);
+
+// Custom recursive function for full control
+// (See deep clone section above)
+
+// Library: lodash.cloneDeep
+\`\`\`
+
+### Q3: How do you check if two objects are equal?
+\`\`\`js
+// Reference equality
+obj1 === obj2
+
+// Shallow equality
+function shallowEqual(a, b) {
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  return keysA.every(key => a[key] === b[key]);
+}
+
+// Deep equality (recursive)
+function deepEqual(a, b) {
+  if (a === b) return true;
+  if (typeof a !== 'object' || typeof b !== 'object') return false;
+  if (a === null || b === null) return false;
+  
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  
+  return keysA.every(key => deepEqual(a[key], b[key]));
+}
+\`\`\`
+
+### Q4: What's the difference between Object.keys() and for...in?
+\`\`\`js
+// Object.keys() - own enumerable properties only
+// for...in - own AND inherited enumerable properties
+
+const parent = { inherited: true };
+const child = Object.create(parent);
+child.own = true;
+
+console.log(Object.keys(child)); // ['own']
+
+for (const key in child) {
+  console.log(key); // 'own', 'inherited'
+}
+\`\`\`
+
+### Q5: How do you merge objects?
+\`\`\`js
+// Shallow merge
+const merged = { ...obj1, ...obj2 };
+const merged = Object.assign({}, obj1, obj2);
+
+// Deep merge (custom function needed)
+function deepMerge(target, source) {
+  for (const key in source) {
+    if (source[key] instanceof Object && key in target) {
+      Object.assign(source[key], deepMerge(target[key], source[key]));
+    }
+  }
+  return { ...target, ...source };
+}
+\`\`\`
+
+### Q6: How do you create an object without a prototype?
+\`\`\`js
+const pureDict = Object.create(null);
+
+console.log(pureDict.toString); // undefined
+console.log('toString' in pureDict); // false
+
+// Useful for:
+// - Clean hash maps
+// - Avoiding prototype pollution
+// - User-provided keys
+\`\`\`
+
+### Q7: What's the output?
+\`\`\`js
+const obj = { a: 1 };
+Object.defineProperty(obj, 'b', { value: 2 });
+console.log(Object.keys(obj));
+// ['a'] - 'b' is non-enumerable by default with defineProperty!
+
+const obj2 = { a: 1 };
+obj2.b = 2;
+console.log(Object.keys(obj2));
+// ['a', 'b'] - normal assignment is enumerable
+
+// With defineProperty, defaults are:
+// writable: false, enumerable: false, configurable: false
+\`\`\`
+
+### Q8: Implement Object.assign polyfill
+\`\`\`js
+if (typeof Object.assign !== 'function') {
+  Object.assign = function(target, ...sources) {
+    if (target == null) {
+      throw new TypeError('Cannot convert undefined or null to object');
+    }
+    
+    const to = Object(target);
+    
+    for (const source of sources) {
+      if (source != null) {
+        for (const key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            to[key] = source[key];
+          }
+        }
+      }
+    }
+    
+    return to;
+  };
+}
+\`\`\`
+
+### Q9: What is optional chaining and nullish coalescing?
+\`\`\`js
+// Optional chaining (?.) - safe property access
+const name = user?.profile?.name; // undefined if any is null/undefined
+
+// Nullish coalescing (??) - default only for null/undefined
+const value = input ?? 'default';
+
+// Difference from ||:
+0 || 'default'  // 'default' (0 is falsy)
+0 ?? 'default'  // 0 (0 is not nullish)
+
+'' || 'default' // 'default' ('' is falsy)
+'' ?? 'default' // '' ('' is not nullish)
+
+// Combining them:
+const theme = user?.preferences?.theme ?? 'light';
+\`\`\`
+
+### Q10: How do property descriptors work?
+\`\`\`js
+// Every property has 4 attributes:
+// - value: the value
+// - writable: can change value
+// - enumerable: shows in for...in, Object.keys
+// - configurable: can delete or change attributes
+
+Object.defineProperty(obj, 'prop', {
+  value: 42,
+  writable: false,     // Cannot change
+  enumerable: false,   // Hidden from iteration
+  configurable: false  // Cannot delete or reconfigure
+});
+
+// Accessor properties have:
+// - get: getter function
+// - set: setter function
+// - enumerable
+// - configurable
+// (No value or writable - they're mutually exclusive)
+\`\`\`
+
+---
+
+## QUICK REFERENCE CHEAT SHEET
+
+| Method/Property | Purpose |
+|-----------------|---------|
+| \`Object.keys()\` | Own enumerable keys |
+| \`Object.values()\` | Own enumerable values |
+| \`Object.entries()\` | Own enumerable [key, value] pairs |
+| \`Object.fromEntries()\` | Create object from entries |
+| \`Object.assign()\` | Shallow merge/clone |
+| \`Object.freeze()\` | Make immutable |
+| \`Object.seal()\` | Prevent add/delete |
+| \`Object.preventExtensions()\` | Prevent adding |
+| \`Object.isFrozen()\` | Check if frozen |
+| \`Object.isSealed()\` | Check if sealed |
+| \`Object.isExtensible()\` | Check if extensible |
+| \`Object.create()\` | Create with prototype |
+| \`Object.getPrototypeOf()\` | Get prototype |
+| \`Object.setPrototypeOf()\` | Set prototype |
+| \`Object.defineProperty()\` | Define single property |
+| \`Object.defineProperties()\` | Define multiple properties |
+| \`Object.getOwnPropertyDescriptor()\` | Get property descriptor |
+| \`Object.getOwnPropertyDescriptors()\` | Get all descriptors |
+| \`Object.getOwnPropertyNames()\` | All own string keys |
+| \`Object.getOwnPropertySymbols()\` | All own symbol keys |
+| \`Object.hasOwn()\` | Check own property (ES2022) |
+| \`in\` operator | Check own + inherited |
+| \`delete\` operator | Remove property |
+
+---
+
+## KEY TAKEAWAYS FOR INTERVIEWS
+
+1. **Know creation methods** - Literal, constructor, Object.create, class
+2. **Understand mutability** - freeze vs seal vs preventExtensions
+3. **Master property descriptors** - writable, enumerable, configurable
+4. **Deep vs shallow** - Know when each matters for cloning/comparison
+5. **Optional chaining & nullish coalescing** - Modern safe access patterns
+6. **Iteration methods** - keys, values, entries, for...in differences
+7. **Destructuring** - With defaults, renaming, rest, nested
+8. **Prototype relationship** - How objects inherit from prototypes
+9. **Object.create(null)** - When and why to use pure dictionaries
+10. **Common utilities** - pick, omit, get, set, merge, flatten`,
+
+  language: 'javascript'
+},
 
     // ==========================================
     // SECTION 4: ARRAYS & DATA MANIPULATION
     // ==========================================
-    {
-      id: 'interview-arrays',
-      title: 'Array Methods - Complete Reference',
-      content: `# Array Methods - Interview Questions
-
-## Mutating Methods (modify original)
-push, pop, shift, unshift, splice, sort, reverse, fill
-
-## Non-Mutating Methods (return new array)
-map, filter, reduce, slice, concat, flat, flatMap
-
-## Search Methods
-find, findIndex, indexOf, includes, some, every`,
-      codeExample: `// ===== BASIC METHODS =====
+ {
+  id: 'interview-arrays',
+  title: 'Array Methods - Complete Reference',
+  content: `# Array Methods - Complete Interview Guide
+## What is an Array?
+An array is an ordered collection of elements that can hold multiple values of any type. In JavaScript, arrays are objects with special behavior - they maintain element order and have a length property that automatically updates.
+## Why Arrays Matter
+Arrays are fundamental data structures used constantly in JavaScript:
+- Storing collections of data
+- Iterating and transforming data
+- Implementing stacks, queues, and other structures
+- Working with API responses
+- DOM manipulation (NodeLists)
+## Array Method Categories
+### Mutating Methods (modify original array)
+push, pop, shift, unshift, splice, sort, reverse, fill, copyWithin
+### Non-Mutating Methods (return new array/value)
+map, filter, reduce, slice, concat, flat, flatMap, toSorted, toReversed, toSpliced
+### Search Methods
+find, findIndex, findLast, findLastIndex, indexOf, lastIndexOf, includes, some, every
+### Iteration Methods
+forEach, map, filter, reduce, reduceRight, every, some, find, findIndex
+## Key Concepts
+- Mutability vs Immutability
+- Callback functions in array methods
+- Method chaining
+- Sparse arrays
+- Array-like objects
+---
+## CREATING ARRAYS
+Multiple ways to create arrays in JavaScript.
+\`\`\`js
+// ========================================
+// ARRAY LITERAL (Most common)
+// ========================================
+const arr1 = [1, 2, 3, 4, 5];
+const arr2 = ['a', 'b', 'c'];
+const mixed = [1, 'two', { three: 3 }, [4], true];
+const empty = [];
+// ========================================
+// ARRAY CONSTRUCTOR
+// ========================================
+const arr3 = new Array(1, 2, 3); // [1, 2, 3]
+const arr4 = new Array(5);       // [empty × 5] - Creates sparse array!
+const arr5 = new Array('5');     // ['5']
+// Gotcha: Single number creates empty slots
+console.log(new Array(3)); // [empty × 3] - NOT [3]!
+console.log(new Array(3).length); // 3
+// ========================================
+// ARRAY.OF() - Avoids the constructor gotcha
+// ========================================
+console.log(Array.of(1, 2, 3)); // [1, 2, 3]
+console.log(Array.of(5));       // [5] - NOT [empty × 5]!
+console.log(Array.of());        // []
+// ========================================
+// ARRAY.FROM() - Create from iterables/array-like
+// ========================================
+// From string
+console.log(Array.from('hello')); // ['h', 'e', 'l', 'l', 'o']
+// From Set
+console.log(Array.from(new Set([1, 2, 2, 3]))); // [1, 2, 3]
+// From Map
+const map = new Map([['a', 1], ['b', 2]]);
+console.log(Array.from(map)); // [['a', 1], ['b', 2]]
+console.log(Array.from(map.keys())); // ['a', 'b']
+console.log(Array.from(map.values())); // [1, 2]
+// From array-like object (has length and indexed elements)
+const arrayLike = { 0: 'a', 1: 'b', 2: 'c', length: 3 };
+console.log(Array.from(arrayLike)); // ['a', 'b', 'c']
+// From NodeList
+const divs = document.querySelectorAll('div');
+const divsArray = Array.from(divs);
+// With mapping function (second argument)
+console.log(Array.from([1, 2, 3], x => x * 2)); // [2, 4, 6]
+// Generate sequence
+console.log(Array.from({ length: 5 }, (_, i) => i)); // [0, 1, 2, 3, 4]
+console.log(Array.from({ length: 5 }, (_, i) => i + 1)); // [1, 2, 3, 4, 5]
+// Generate range
+const range = (start, end) => 
+  Array.from({ length: end - start }, (_, i) => start + i);
+console.log(range(5, 10)); // [5, 6, 7, 8, 9]
+// ========================================
+// SPREAD OPERATOR - Clone/Combine arrays
+// ========================================
+const original = [1, 2, 3];
+const clone = [...original]; // Shallow clone
+const combined = [...[1, 2], ...[3, 4]]; // [1, 2, 3, 4]
+// Convert iterable to array
+const str = 'hello';
+console.log([...str]); // ['h', 'e', 'l', 'l', 'o']
+// ========================================
+// FILL - Create array with same value
+// ========================================
+console.log(new Array(5).fill(0)); // [0, 0, 0, 0, 0]
+console.log(new Array(3).fill('x')); // ['x', 'x', 'x']
+// Gotcha with objects - same reference!
+const objArray = new Array(3).fill({});
+objArray[0].name = 'John';
+console.log(objArray); // [{name:'John'}, {name:'John'}, {name:'John'}]
+// Fix: Use Array.from
+const objArrayFixed = Array.from({ length: 3 }, () => ({}));
+objArrayFixed[0].name = 'John';
+console.log(objArrayFixed); // [{name:'John'}, {}, {}]
+\`\`\`
+---
+## MUTATING METHODS
+These methods modify the original array. Be careful when using them in functional programming!
+### push() and pop() - End of Array
+\`\`\`js
+// ========================================
+// PUSH - Add to end, returns new length
+// ========================================
+const arr = [1, 2, 3];
+const newLength = arr.push(4);
+console.log(arr);       // [1, 2, 3, 4]
+console.log(newLength); // 4
+// Push multiple values
+arr.push(5, 6, 7);
+console.log(arr); // [1, 2, 3, 4, 5, 6, 7]
+// Push array elements (spread)
+arr.push(...[8, 9]);
+console.log(arr); // [1, 2, 3, 4, 5, 6, 7, 8, 9]
+// Common mistake: push returns length, not array
+const result = [1, 2].push(3); // result is 3 (length), not [1,2,3]
+// ========================================
+// POP - Remove from end, returns removed element
+// ========================================
+const arr2 = [1, 2, 3, 4, 5];
+const removed = arr2.pop();
+console.log(arr2);    // [1, 2, 3, 4]
+console.log(removed); // 5
+// Pop from empty array
+console.log([].pop()); // undefined
+// Stack implementation using push/pop
+class Stack {
+  constructor() {
+    this.items = [];
+  }
+  push(item) { this.items.push(item); }
+  pop() { return this.items.pop(); }
+  peek() { return this.items[this.items.length - 1]; }
+  isEmpty() { return this.items.length === 0; }
+}
+\`\`\`
+### shift() and unshift() - Beginning of Array
+\`\`\`js
+// ========================================
+// UNSHIFT - Add to beginning, returns new length
+// ========================================
+const arr = [3, 4, 5];
+const newLength = arr.unshift(1, 2);
+console.log(arr);       // [1, 2, 3, 4, 5]
+console.log(newLength); // 5
+// ========================================
+// SHIFT - Remove from beginning, returns removed element
+// ========================================
+const arr2 = [1, 2, 3, 4, 5];
+const removed = arr2.shift();
+console.log(arr2);    // [2, 3, 4, 5]
+console.log(removed); // 1
+// Queue implementation using push/shift
+class Queue {
+  constructor() {
+    this.items = [];
+  }
+  enqueue(item) { this.items.push(item); }
+  dequeue() { return this.items.shift(); }
+  front() { return this.items[0]; }
+  isEmpty() { return this.items.length === 0; }
+}
+// Performance note:
+// push/pop are O(1) - very fast
+// shift/unshift are O(n) - must re-index all elements
+\`\`\`
+### splice() - The Swiss Army Knife
+Splice can add, remove, and replace elements anywhere in the array. It modifies the original array and returns removed elements.
+\`\`\`js
+// Syntax: splice(startIndex, deleteCount, ...itemsToInsert)
 const arr = [1, 2, 3, 4, 5];
-
-// Adding/Removing
-arr.push(6);          // [1,2,3,4,5,6] - add to end
-arr.pop();            // [1,2,3,4,5] - remove from end
-arr.unshift(0);       // [0,1,2,3,4,5] - add to start
-arr.shift();          // [1,2,3,4,5] - remove from start
-
-// Splice - mutates!
-const removed = arr.splice(2, 1, 'a', 'b'); // Start at 2, remove 1, insert 'a','b'
-console.log(arr);     // [1, 2, 'a', 'b', 4, 5]
-console.log(removed); // [3]
-
-// Slice - doesn't mutate
-const nums = [1, 2, 3, 4, 5];
-console.log(nums.slice(1, 3));  // [2, 3]
-console.log(nums.slice(-2));    // [4, 5]
-
-// ===== MAP =====
-const numbers = [1, 2, 3, 4];
+// ========================================
+// REMOVE ELEMENTS
+// ========================================
+// Remove 2 elements starting at index 1
+const removed = arr.splice(1, 2);
+console.log(arr);     // [1, 4, 5]
+console.log(removed); // [2, 3]
+// Remove 1 element at index 0
+const arr2 = ['a', 'b', 'c'];
+arr2.splice(0, 1);
+console.log(arr2); // ['b', 'c']
+// Remove all elements from index 2
+const arr3 = [1, 2, 3, 4, 5];
+arr3.splice(2);
+console.log(arr3); // [1, 2]
+// ========================================
+// INSERT ELEMENTS (deleteCount = 0)
+// ========================================
+const arr4 = [1, 2, 5];
+arr4.splice(2, 0, 3, 4); // At index 2, delete 0, insert 3 and 4
+console.log(arr4); // [1, 2, 3, 4, 5]
+// Insert at beginning
+const arr5 = [2, 3];
+arr5.splice(0, 0, 1);
+console.log(arr5); // [1, 2, 3]
+// ========================================
+// REPLACE ELEMENTS
+// ========================================
+const arr6 = [1, 2, 3, 4, 5];
+arr6.splice(2, 2, 'a', 'b', 'c'); // Remove 2, insert 3
+console.log(arr6); // [1, 2, 'a', 'b', 'c', 5]
+// ========================================
+// NEGATIVE INDICES
+// ========================================
+const arr7 = [1, 2, 3, 4, 5];
+arr7.splice(-2, 1); // Start 2 from end, remove 1
+console.log(arr7); // [1, 2, 3, 5]
+// ========================================
+// COMMON PATTERNS
+// ========================================
+// Remove element by value
+function removeByValue(arr, value) {
+  const index = arr.indexOf(value);
+  if (index !== -1) {
+    arr.splice(index, 1);
+  }
+  return arr;
+}
+// Remove all occurrences
+function removeAllByValue(arr, value) {
+  for (let i = arr.length - 1; i >= 0; i--) {
+    if (arr[i] === value) {
+      arr.splice(i, 1);
+    }
+  }
+  return arr;
+}
+// Insert at specific index
+function insertAt(arr, index, ...items) {
+  arr.splice(index, 0, ...items);
+  return arr;
+}
+// Move element from one index to another
+function moveElement(arr, fromIndex, toIndex) {
+  const [element] = arr.splice(fromIndex, 1);
+  arr.splice(toIndex, 0, element);
+  return arr;
+}
+const arr8 = ['a', 'b', 'c', 'd'];
+moveElement(arr8, 0, 2);
+console.log(arr8); // ['b', 'c', 'a', 'd']
+\`\`\`
+### sort() - Sorting Arrays
+\`\`\`js
+// ========================================
+// DEFAULT SORT (String comparison)
+// ========================================
+const letters = ['d', 'b', 'a', 'c'];
+letters.sort(); // MUTATES!
+console.log(letters); // ['a', 'b', 'c', 'd']
+// GOTCHA: Numbers are converted to strings!
+const numbers = [10, 2, 33, 4, 100];
+numbers.sort();
+console.log(numbers); // [10, 100, 2, 33, 4] - WRONG!
+// ========================================
+// NUMERIC SORT (Use compare function)
+// ========================================
+// Compare function: (a, b) => negative | 0 | positive
+// negative: a comes before b
+// positive: b comes before a
+// 0: order unchanged
+const nums = [10, 2, 33, 4, 100];
+// Ascending
+nums.sort((a, b) => a - b);
+console.log(nums); // [2, 4, 10, 33, 100]
+// Descending
+nums.sort((a, b) => b - a);
+console.log(nums); // [100, 33, 10, 4, 2]
+// ========================================
+// SORTING OBJECTS
+// ========================================
+const people = [
+  { name: 'John', age: 30 },
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 35 }
+];
+// Sort by age (ascending)
+people.sort((a, b) => a.age - b.age);
+console.log(people.map(p => p.name)); // ['Alice', 'John', 'Bob']
+// Sort by name (alphabetical)
+people.sort((a, b) => a.name.localeCompare(b.name));
+console.log(people.map(p => p.name)); // ['Alice', 'Bob', 'John']
+// Sort by multiple criteria
+const students = [
+  { name: 'John', grade: 'A', age: 20 },
+  { name: 'Jane', grade: 'B', age: 20 },
+  { name: 'Bob', grade: 'A', age: 22 }
+];
+// Sort by grade, then by age
+students.sort((a, b) => {
+  if (a.grade !== b.grade) {
+    return a.grade.localeCompare(b.grade);
+  }
+  return a.age - b.age;
+});
+// ========================================
+// STABLE SORT
+// ========================================
+// As of ES2019, sort() is guaranteed to be stable
+// Equal elements maintain their relative order
+// ========================================
+// NON-MUTATING SORT (toSorted - ES2023)
+// ========================================
+const original = [3, 1, 4, 1, 5];
+const sorted = original.toSorted((a, b) => a - b);
+console.log(original); // [3, 1, 4, 1, 5] - unchanged
+console.log(sorted);   // [1, 1, 3, 4, 5]
+// Polyfill for older environments
+const sortedCopy = [...original].sort((a, b) => a - b);
+// ========================================
+// COMMON SORTING PATTERNS
+// ========================================
+// Random shuffle (Fisher-Yates)
+function shuffle(arr) {
+  const result = [...arr];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+// Don't use: arr.sort(() => Math.random() - 0.5)
+// It's not uniformly random!
+// Sort by property with null handling
+const items = [
+  { date: new Date('2024-01-01') },
+  { date: null },
+  { date: new Date('2023-06-15') }
+];
+items.sort((a, b) => {
+  if (!a.date && !b.date) return 0;
+  if (!a.date) return 1;  // nulls last
+  if (!b.date) return -1;
+  return a.date - b.date;
+});
+\`\`\`
+### reverse() and fill()
+\`\`\`js
+// ========================================
+// REVERSE - Reverses array in place
+// ========================================
+const arr = [1, 2, 3, 4, 5];
+arr.reverse(); // MUTATES!
+console.log(arr); // [5, 4, 3, 2, 1]
+// Non-mutating reverse (toReversed - ES2023)
+const original = [1, 2, 3];
+const reversed = original.toReversed();
+console.log(original); // [1, 2, 3] - unchanged
+console.log(reversed); // [3, 2, 1]
+// Polyfill
+const reversedCopy = [...original].reverse();
+// ========================================
+// FILL - Fill array with static value
+// ========================================
+// Syntax: fill(value, startIndex?, endIndex?)
+const arr2 = [1, 2, 3, 4, 5];
+arr2.fill(0);
+console.log(arr2); // [0, 0, 0, 0, 0]
+const arr3 = [1, 2, 3, 4, 5];
+arr3.fill(0, 2, 4); // Fill from index 2 to 4 (exclusive)
+console.log(arr3); // [1, 2, 0, 0, 5]
+const arr4 = [1, 2, 3, 4, 5];
+arr4.fill(0, 2); // Fill from index 2 to end
+console.log(arr4); // [1, 2, 0, 0, 0]
+// Negative indices
+const arr5 = [1, 2, 3, 4, 5];
+arr5.fill(0, -3, -1);
+console.log(arr5); // [1, 2, 0, 0, 5]
+// Create array filled with value
+const zeros = new Array(5).fill(0); // [0, 0, 0, 0, 0]
+// GOTCHA: Same reference for objects!
+const objArr = new Array(3).fill({ x: 0 });
+objArr[0].x = 1;
+console.log(objArr); // [{x:1}, {x:1}, {x:1}] - All changed!
+// Fix with map
+const objArrFixed = new Array(3).fill(null).map(() => ({ x: 0 }));
+objArrFixed[0].x = 1;
+console.log(objArrFixed); // [{x:1}, {x:0}, {x:0}]
+\`\`\`
+### copyWithin()
+\`\`\`js
+// copyWithin(targetIndex, startIndex, endIndex?)
+// Copies part of array to another location in same array
+const arr = [1, 2, 3, 4, 5];
+// Copy elements 3-4 to position 0
+arr.copyWithin(0, 3, 5);
+console.log(arr); // [4, 5, 3, 4, 5]
+const arr2 = [1, 2, 3, 4, 5];
+arr2.copyWithin(0, 3); // Copy from index 3 to end, paste at 0
+console.log(arr2); // [4, 5, 3, 4, 5]
+const arr3 = [1, 2, 3, 4, 5];
+arr3.copyWithin(2, 0, 2); // Copy 0-1, paste at 2
+console.log(arr3); // [1, 2, 1, 2, 5]
+// Negative indices
+const arr4 = [1, 2, 3, 4, 5];
+arr4.copyWithin(-2, 0, 2);
+console.log(arr4); // [1, 2, 3, 1, 2]
+// Use case: Efficient array rotation
+function rotateLeft(arr, positions) {
+  const n = arr.length;
+  positions = positions % n;
+  arr.copyWithin(0, positions);
+  return arr;
+}
+\`\`\`
+---
+## NON-MUTATING TRANSFORMATION METHODS
+These methods return a new array without modifying the original.
+### map() - Transform Each Element
+\`\`\`js
+// map(callback(element, index, array))
+// Returns a NEW array with transformed elements
+const numbers = [1, 2, 3, 4, 5];
+// ========================================
+// BASIC TRANSFORMATION
+// ========================================
 const doubled = numbers.map(n => n * 2);
-console.log(doubled); // [2, 4, 6, 8]
-
-// Map with index
+console.log(doubled);  // [2, 4, 6, 8, 10]
+console.log(numbers);  // [1, 2, 3, 4, 5] - unchanged
+// Square each number
+const squared = numbers.map(n => n * n);
+console.log(squared); // [1, 4, 9, 16, 25]
+// ========================================
+// WITH INDEX PARAMETER
+// ========================================
 const indexed = numbers.map((n, i) => ({ value: n, index: i }));
-
-// ===== FILTER =====
+console.log(indexed);
+// [{value:1, index:0}, {value:2, index:1}, ...]
+// Multiply by index
+const byIndex = numbers.map((n, i) => n * i);
+console.log(byIndex); // [0, 2, 6, 12, 20]
+// ========================================
+// TRANSFORMING OBJECTS
+// ========================================
+const users = [
+  { firstName: 'John', lastName: 'Doe', age: 30 },
+  { firstName: 'Jane', lastName: 'Smith', age: 25 }
+];
+// Extract property
+const names = users.map(user => user.firstName);
+console.log(names); // ['John', 'Jane']
+// Create new object structure
+const transformed = users.map(user => ({
+  fullName: \`\${user.firstName} \${user.lastName}\`,
+  isAdult: user.age >= 18
+}));
+// Add new property
+const withId = users.map((user, i) => ({
+  ...user,
+  id: i + 1
+}));
+// ========================================
+// COMMON PATTERNS
+// ========================================
+// Parse numbers from strings
+const strings = ['1', '2', '3', '4', '5'];
+const nums = strings.map(Number);
+console.log(nums); // [1, 2, 3, 4, 5]
+// GOTCHA with parseInt
+console.log(['1', '2', '3'].map(parseInt));
+// [1, NaN, NaN] - Because map passes index as second argument!
+// parseInt('1', 0) = 1
+// parseInt('2', 1) = NaN (base 1 is invalid)
+// parseInt('3', 2) = NaN (3 is not valid in base 2)
+// Fix:
+console.log(['1', '2', '3'].map(s => parseInt(s, 10))); // [1, 2, 3]
+console.log(['1', '2', '3'].map(Number)); // [1, 2, 3]
+// Convert to different format
+const dates = ['2024-01-01', '2024-06-15', '2024-12-31'];
+const formatted = dates.map(d => new Date(d).toLocaleDateString());
+// Normalize data
+const rawData = ['  HELLO ', 'World  ', '  TEST'];
+const normalized = rawData.map(s => s.trim().toLowerCase());
+console.log(normalized); // ['hello', 'world', 'test']
+// ========================================
+// MAP VS FOREACH
+// ========================================
+// map returns a new array, forEach returns undefined
+// Use map when you need the transformed array
+// Use forEach for side effects only
+const result1 = [1, 2, 3].map(n => n * 2);    // [2, 4, 6]
+const result2 = [1, 2, 3].forEach(n => n * 2); // undefined
+// Don't use map for side effects (it's wasteful)
+// BAD:
+users.map(user => console.log(user.name)); // Creates useless array
+// GOOD:
+users.forEach(user => console.log(user.name));
+\`\`\`
+### filter() - Select Elements
+\`\`\`js
+// filter(callback(element, index, array))
+// Returns NEW array with elements that pass the test
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+// ========================================
+// BASIC FILTERING
+// ========================================
+// Keep even numbers
 const evens = numbers.filter(n => n % 2 === 0);
-console.log(evens); // [2, 4]
-
-// Filter with truthy values
-const mixed = [0, 1, '', 'hello', null, undefined, false, true];
+console.log(evens); // [2, 4, 6, 8, 10]
+// Keep numbers greater than 5
+const large = numbers.filter(n => n > 5);
+console.log(large); // [6, 7, 8, 9, 10]
+// Keep numbers between 3 and 8
+const range = numbers.filter(n => n >= 3 && n <= 8);
+console.log(range); // [3, 4, 5, 6, 7, 8]
+// ========================================
+// FILTERING OBJECTS
+// ========================================
+const products = [
+  { name: 'Laptop', price: 999, inStock: true },
+  { name: 'Phone', price: 699, inStock: false },
+  { name: 'Tablet', price: 499, inStock: true },
+  { name: 'Watch', price: 299, inStock: true }
+];
+// Filter by property
+const inStock = products.filter(p => p.inStock);
+console.log(inStock.length); // 3
+// Filter by multiple conditions
+const affordable = products.filter(p => p.price < 500 && p.inStock);
+console.log(affordable.map(p => p.name)); // ['Tablet', 'Watch']
+// ========================================
+// REMOVING VALUES
+// ========================================
+// Remove falsy values
+const mixed = [0, 1, '', 'hello', null, undefined, false, true, NaN];
 const truthy = mixed.filter(Boolean);
 console.log(truthy); // [1, 'hello', true]
-
-// ===== REDUCE =====
-// Sum
-const sum = numbers.reduce((acc, curr) => acc + curr, 0);
-console.log(sum); // 10
-
-// Max
-const max = numbers.reduce((a, b) => Math.max(a, b));
-console.log(max); // 4
-
-// Group by
-const people = [
-  { name: 'John', age: 25 },
-  { name: 'Jane', age: 25 },
-  { name: 'Bob', age: 30 }
+// How it works:
+// Boolean(0) = false, Boolean(1) = true, etc.
+// Remove specific value
+const withoutThree = numbers.filter(n => n !== 3);
+console.log(withoutThree); // [1, 2, 4, 5, 6, 7, 8, 9, 10]
+// Remove nulls and undefined
+const data = [1, null, 2, undefined, 3, null];
+const clean = data.filter(x => x != null); // Uses loose equality
+console.log(clean); // [1, 2, 3]
+// Or strict:
+const cleanStrict = data.filter(x => x !== null && x !== undefined);
+// ========================================
+// UNIQUE VALUES
+// ========================================
+const duplicates = [1, 2, 2, 3, 3, 3, 4];
+const unique = duplicates.filter((value, index, arr) => 
+  arr.indexOf(value) === index
+);
+console.log(unique); // [1, 2, 3, 4]
+// Better: Use Set
+const uniqueSet = [...new Set(duplicates)];
+console.log(uniqueSet); // [1, 2, 3, 4]
+// Unique objects by property
+const users = [
+  { id: 1, name: 'John' },
+  { id: 2, name: 'Jane' },
+  { id: 1, name: 'John' } // Duplicate
 ];
-
-const grouped = people.reduce((acc, person) => {
+const uniqueUsers = users.filter((user, index, arr) =>
+  arr.findIndex(u => u.id === user.id) === index
+);
+// ========================================
+// FILTER WITH INDEX
+// ========================================
+// Keep every other element
+const everyOther = numbers.filter((_, i) => i % 2 === 0);
+console.log(everyOther); // [1, 3, 5, 7, 9]
+// Keep first 5 elements (prefer slice though)
+const firstFive = numbers.filter((_, i) => i < 5);
+// ========================================
+// SEARCH/FILTER PATTERNS
+// ========================================
+// Search by partial match
+const names = ['John', 'Jane', 'Bob', 'Alice', 'Johnny'];
+const searchTerm = 'jo';
+const matches = names.filter(name => 
+  name.toLowerCase().includes(searchTerm.toLowerCase())
+);
+console.log(matches); // ['John', 'Johnny']
+// Filter by array of allowed values
+const allowedIds = [1, 3, 5];
+const users2 = [
+  { id: 1, name: 'A' },
+  { id: 2, name: 'B' },
+  { id: 3, name: 'C' }
+];
+const filtered = users2.filter(u => allowedIds.includes(u.id));
+// Exclude by array of values
+const excluded = users2.filter(u => !allowedIds.includes(u.id));
+\`\`\`
+### reduce() - Accumulate to Single Value
+Reduce is the most powerful array method. It can implement map, filter, and more.
+\`\`\`js
+// reduce(callback(accumulator, currentValue, index, array), initialValue)
+// Returns a single accumulated value
+const numbers = [1, 2, 3, 4, 5];
+// ========================================
+// BASIC REDUCTION - Sum
+// ========================================
+const sum = numbers.reduce((acc, curr) => acc + curr, 0);
+console.log(sum); // 15
+// How it works:
+// Initial: acc = 0
+// Step 1: acc = 0 + 1 = 1
+// Step 2: acc = 1 + 2 = 3
+// Step 3: acc = 3 + 3 = 6
+// Step 4: acc = 6 + 4 = 10
+// Step 5: acc = 10 + 5 = 15
+// Without initial value (uses first element)
+const sum2 = numbers.reduce((acc, curr) => acc + curr);
+console.log(sum2); // 15
+// IMPORTANT: Always provide initial value!
+// Empty array without initial value throws error
+// [].reduce((a, b) => a + b); // TypeError!
+// [].reduce((a, b) => a + b, 0); // 0 - Safe
+// ========================================
+// COMMON REDUCTIONS
+// ========================================
+// Product
+const product = numbers.reduce((acc, curr) => acc * curr, 1);
+console.log(product); // 120
+// Maximum
+const max = numbers.reduce((acc, curr) => Math.max(acc, curr), -Infinity);
+console.log(max); // 5
+// Or simpler:
+const max2 = numbers.reduce((a, b) => a > b ? a : b);
+// Minimum
+const min = numbers.reduce((a, b) => a < b ? a : b);
+// Average
+const avg = numbers.reduce((acc, curr, i, arr) => {
+  acc += curr;
+  if (i === arr.length - 1) {
+    return acc / arr.length;
+  }
+  return acc;
+}, 0);
+// ========================================
+// COUNT OCCURRENCES
+// ========================================
+const letters = ['a', 'b', 'a', 'c', 'b', 'a', 'd'];
+const counts = letters.reduce((acc, letter) => {
+  acc[letter] = (acc[letter] || 0) + 1;
+  return acc;
+}, {});
+console.log(counts); // { a: 3, b: 2, c: 1, d: 1 }
+// Count by property
+const orders = [
+  { status: 'pending' },
+  { status: 'shipped' },
+  { status: 'pending' },
+  { status: 'delivered' }
+];
+const statusCounts = orders.reduce((acc, order) => {
+  acc[order.status] = (acc[order.status] || 0) + 1;
+  return acc;
+}, {});
+console.log(statusCounts); // { pending: 2, shipped: 1, delivered: 1 }
+// ========================================
+// GROUP BY
+// ========================================
+const people = [
+  { name: 'John', age: 25, city: 'NYC' },
+  { name: 'Jane', age: 30, city: 'LA' },
+  { name: 'Bob', age: 25, city: 'NYC' },
+  { name: 'Alice', age: 30, city: 'LA' }
+];
+// Group by age
+const byAge = people.reduce((acc, person) => {
   const key = person.age;
   acc[key] = acc[key] || [];
   acc[key].push(person);
   return acc;
 }, {});
-console.log(grouped);
-// { 25: [{...}, {...}], 30: [{...}] }
-
-// Count occurrences
-const letters = ['a', 'b', 'a', 'c', 'b', 'a'];
-const count = letters.reduce((acc, letter) => {
-  acc[letter] = (acc[letter] || 0) + 1;
-  return acc;
-}, {});
-console.log(count); // { a: 3, b: 2, c: 1 }
-
-// Flatten array
-const nested = [[1, 2], [3, 4], [5]];
+console.log(byAge);
+// { 25: [{name:'John'...}, {name:'Bob'...}], 30: [...] }
+// Generic groupBy function
+function groupBy(arr, keyFn) {
+  return arr.reduce((acc, item) => {
+    const key = typeof keyFn === 'function' ? keyFn(item) : item[keyFn];
+    acc[key] = acc[key] || [];
+    acc[key].push(item);
+    return acc;
+  }, {});
+}
+const byCity = groupBy(people, 'city');
+const byDecade = groupBy(people, p => Math.floor(p.age / 10) * 10);
+// Note: Object.groupBy() is now available in modern browsers (ES2024)
+const grouped = Object.groupBy(people, p => p.city);
+// ========================================
+// FLATTEN ARRAY
+// ========================================
+const nested = [[1, 2], [3, 4], [5, 6]];
 const flat = nested.reduce((acc, curr) => acc.concat(curr), []);
-console.log(flat); // [1, 2, 3, 4, 5]
-
-// ===== FIND / FINDINDEX =====
-const users = [
-  { id: 1, name: 'John' },
-  { id: 2, name: 'Jane' }
-];
-
-const found = users.find(u => u.id === 2);
-console.log(found); // { id: 2, name: 'Jane' }
-
-const index = users.findIndex(u => u.id === 2);
-console.log(index); // 1
-
-// ===== SOME / EVERY =====
-const nums2 = [1, 2, 3, 4, 5];
-
-console.log(nums2.some(n => n > 3));  // true (at least one)
-console.log(nums2.every(n => n > 0)); // true (all)
-console.log(nums2.every(n => n > 3)); // false
-
-// ===== FLAT / FLATMAP =====
-const deepNested = [1, [2, [3, [4]]]];
-
-console.log(deepNested.flat());     // [1, 2, [3, [4]]]
-console.log(deepNested.flat(2));    // [1, 2, 3, [4]]
-console.log(deepNested.flat(Infinity)); // [1, 2, 3, 4]
-
-// flatMap = map + flat(1)
+console.log(flat); // [1, 2, 3, 4, 5, 6]
+// Or better: use flat()
+const flat2 = nested.flat();
+// ========================================
+// IMPLEMENT MAP WITH REDUCE
+// ========================================
+const mapWithReduce = (arr, fn) => 
+  arr.reduce((acc, curr, i) => {
+    acc.push(fn(curr, i, arr));
+    return acc;
+  }, []);
+console.log(mapWithReduce([1, 2, 3], x => x * 2)); // [2, 4, 6]
+// ========================================
+// IMPLEMENT FILTER WITH REDUCE
+// ========================================
+const filterWithReduce = (arr, fn) =>
+  arr.reduce((acc, curr, i) => {
+    if (fn(curr, i, arr)) {
+      acc.push(curr);
+    }
+    return acc;
+  }, []);
+console.log(filterWithReduce([1, 2, 3, 4], x => x % 2 === 0)); // [2, 4]
+// ========================================
+// CHAINING OPERATIONS
+// ========================================
+// Instead of multiple passes:
+const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+// Multiple passes (less efficient)
+const result1 = data
+  .filter(n => n % 2 === 0)
+  .map(n => n * 2)
+  .reduce((sum, n) => sum + n, 0);
+// Single pass with reduce (more efficient for large arrays)
+const result2 = data.reduce((acc, n) => {
+  if (n % 2 === 0) {
+    acc += n * 2;
+  }
+  return acc;
+}, 0);
+// ========================================
+// REDUCE RIGHT (Right to Left)
+// ========================================
+const arr = ['a', 'b', 'c'];
+const leftToRight = arr.reduce((acc, curr) => acc + curr, '');
+console.log(leftToRight); // 'abc'
+const rightToLeft = arr.reduceRight((acc, curr) => acc + curr, '');
+console.log(rightToLeft); // 'cba'
+// Use case: Function composition (right to left)
+const compose = (...fns) => x => 
+  fns.reduceRight((acc, fn) => fn(acc), x);
+// ========================================
+// PIPELINE WITH REDUCE
+// ========================================
+const pipeline = (...fns) => initial =>
+  fns.reduce((acc, fn) => fn(acc), initial);
+const process = pipeline(
+  x => x + 1,
+  x => x * 2,
+  x => x - 5
+);
+console.log(process(5)); // 7: ((5+1)*2)-5
+\`\`\`
+### slice() - Extract Portion
+\`\`\`js
+// slice(startIndex?, endIndex?)
+// Returns NEW array with portion of original
+// Does NOT mutate original
+const arr = [1, 2, 3, 4, 5];
+// ========================================
+// BASIC SLICING
+// ========================================
+console.log(arr.slice(1, 3));  // [2, 3] - from 1 to 3 (exclusive)
+console.log(arr.slice(2));     // [3, 4, 5] - from 2 to end
+console.log(arr.slice());      // [1, 2, 3, 4, 5] - shallow copy!
+// ========================================
+// NEGATIVE INDICES
+// ========================================
+console.log(arr.slice(-2));    // [4, 5] - last 2 elements
+console.log(arr.slice(-3, -1)); // [3, 4] - from 3rd last to 2nd last
+console.log(arr.slice(1, -1)); // [2, 3, 4] - from 1 to second-to-last
+// ========================================
+// COMMON PATTERNS
+// ========================================
+// Get first N elements
+const firstThree = arr.slice(0, 3); // [1, 2, 3]
+// Get last N elements
+const lastTwo = arr.slice(-2); // [4, 5]
+// Remove first element (immutably)
+const withoutFirst = arr.slice(1); // [2, 3, 4, 5]
+// Remove last element (immutably)
+const withoutLast = arr.slice(0, -1); // [1, 2, 3, 4]
+// Shallow clone
+const clone = arr.slice();
+const clone2 = [...arr]; // Equivalent
+// ========================================
+// SLICE VS SPLICE
+// ========================================
+// slice: Non-mutating, returns extracted portion
+// splice: Mutating, modifies original, returns removed elements
+const test1 = [1, 2, 3, 4, 5];
+const sliced = test1.slice(1, 3);
+console.log(test1);   // [1, 2, 3, 4, 5] - unchanged
+console.log(sliced);  // [2, 3]
+const test2 = [1, 2, 3, 4, 5];
+const spliced = test2.splice(1, 2);
+console.log(test2);   // [1, 4, 5] - modified!
+console.log(spliced); // [2, 3]
+// ========================================
+// TOOSPLICED (ES2023) - Non-mutating splice
+// ========================================
+const original = [1, 2, 3, 4, 5];
+const modified = original.toSpliced(1, 2, 'a', 'b');
+console.log(original); // [1, 2, 3, 4, 5] - unchanged
+console.log(modified); // [1, 'a', 'b', 4, 5]
+\`\`\`
+### concat() and flat()
+\`\`\`js
+// ========================================
+// CONCAT - Merge arrays
+// ========================================
+const arr1 = [1, 2];
+const arr2 = [3, 4];
+const arr3 = [5, 6];
+// Concat two arrays
+const merged = arr1.concat(arr2);
+console.log(merged); // [1, 2, 3, 4]
+// Concat multiple arrays
+const all = arr1.concat(arr2, arr3);
+console.log(all); // [1, 2, 3, 4, 5, 6]
+// Concat with values
+const withValues = arr1.concat(3, 4, [5, 6]);
+console.log(withValues); // [1, 2, 3, 4, 5, 6]
+// Original arrays unchanged
+console.log(arr1); // [1, 2]
+// Spread operator alternative (often preferred)
+const spreadMerge = [...arr1, ...arr2, ...arr3];
+console.log(spreadMerge); // [1, 2, 3, 4, 5, 6]
+// ========================================
+// FLAT - Flatten nested arrays
+// ========================================
+const nested = [1, [2, 3], [4, [5, 6]]];
+// Flatten 1 level (default)
+console.log(nested.flat()); // [1, 2, 3, 4, [5, 6]]
+// Flatten 2 levels
+console.log(nested.flat(2)); // [1, 2, 3, 4, 5, 6]
+// Flatten all levels
+const deepNested = [1, [2, [3, [4, [5]]]]];
+console.log(deepNested.flat(Infinity)); // [1, 2, 3, 4, 5]
+// Flat also removes empty slots
+const sparse = [1, , 3, , 5];
+console.log(sparse.flat()); // [1, 3, 5]
+// ========================================
+// FLATMAP - Map then flat(1)
+// ========================================
+// More efficient than .map().flat()
 const sentences = ['Hello World', 'How are you'];
 const words = sentences.flatMap(s => s.split(' '));
 console.log(words); // ['Hello', 'World', 'How', 'are', 'you']
-
-// ===== SORT =====
-const unsorted = [3, 1, 4, 1, 5, 9];
-unsorted.sort(); // Mutates! Default is string comparison
-console.log(unsorted); // [1, 1, 3, 4, 5, 9]
-
-// Numeric sort
-const numSort = [10, 2, 33, 4].sort((a, b) => a - b);
-console.log(numSort); // [2, 4, 10, 33]
-
-// Object sort
-const sortedPeople = [...people].sort((a, b) => a.age - b.age);
-
-// ===== INCLUDES / INDEXOF =====
-const arr2 = [1, 2, NaN, 4];
-
-console.log(arr2.includes(2));    // true
-console.log(arr2.includes(NaN));  // true (handles NaN!)
-console.log(arr2.indexOf(2));     // 1
-console.log(arr2.indexOf(NaN));   // -1 (doesn't handle NaN)
-
-// ===== FILL / COPYWITHIN =====
-const fillArr = [1, 2, 3, 4, 5];
-fillArr.fill(0, 2, 4); // Fill with 0 from index 2 to 4
-console.log(fillArr); // [1, 2, 0, 0, 5]
-
-// ===== ARRAY.FROM / ARRAY.OF =====
-// From - create array from iterable
-console.log(Array.from('hello')); // ['h', 'e', 'l', 'l', 'o']
-console.log(Array.from({ length: 5 }, (_, i) => i)); // [0, 1, 2, 3, 4]
-
-// Of - create array from arguments
-console.log(Array.of(1, 2, 3)); // [1, 2, 3]
-console.log(Array(3));          // [empty × 3]
-console.log(Array.of(3));       // [3]
-
-// ===== IMPLEMENT ARRAY METHODS =====
-Array.prototype.myMap = function(callback) {
-  const result = [];
-  for (let i = 0; i < this.length; i++) {
-    result.push(callback(this[i], i, this));
+// Map would give: [['Hello', 'World'], ['How', 'are', 'you']]
+// flatMap flattens one level
+// Duplicate elements
+const nums = [1, 2, 3];
+const duplicated = nums.flatMap(n => [n, n]);
+console.log(duplicated); // [1, 1, 2, 2, 3, 3]
+// Filter and map in one
+const data = [1, 2, 3, 4, 5];
+const evenDoubled = data.flatMap(n => n % 2 === 0 ? [n * 2] : []);
+console.log(evenDoubled); // [4, 8]
+// Equivalent to:
+const evenDoubled2 = data.filter(n => n % 2 === 0).map(n => n * 2);
+\`\`\`
+---
+## SEARCH AND FIND METHODS
+### find() and findIndex()
+\`\`\`js
+// find(callback) - Returns first element that matches
+// findIndex(callback) - Returns index of first element that matches
+const users = [
+  { id: 1, name: 'John', role: 'admin' },
+  { id: 2, name: 'Jane', role: 'user' },
+  { id: 3, name: 'Bob', role: 'user' }
+];
+// ========================================
+// FIND - Returns element or undefined
+// ========================================
+const admin = users.find(u => u.role === 'admin');
+console.log(admin); // { id: 1, name: 'John', role: 'admin' }
+const manager = users.find(u => u.role === 'manager');
+console.log(manager); // undefined
+// Find by id
+const user = users.find(u => u.id === 2);
+console.log(user.name); // 'Jane'
+// ========================================
+// FINDINDEX - Returns index or -1
+// ========================================
+const adminIndex = users.findIndex(u => u.role === 'admin');
+console.log(adminIndex); // 0
+const managerIndex = users.findIndex(u => u.role === 'manager');
+console.log(managerIndex); // -1
+// ========================================
+// FINDLAST & FINDLASTINDEX (ES2023)
+// ========================================
+const numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
+const lastGreaterThan3 = numbers.findLast(n => n > 3);
+console.log(lastGreaterThan3); // 4
+const lastGreaterThan3Index = numbers.findLastIndex(n => n > 3);
+console.log(lastGreaterThan3Index); // 5
+// ========================================
+// FIND VS FILTER
+// ========================================
+// find: Returns first match (single element)
+// filter: Returns all matches (array)
+const allUsers = users.filter(u => u.role === 'user');
+console.log(allUsers.length); // 2
+const firstUser = users.find(u => u.role === 'user');
+console.log(firstUser.name); // 'Jane'
+\`\`\`
+### indexOf(), lastIndexOf(), includes()
+\`\`\`js
+const arr = [1, 2, 3, 4, 5, 3, 2, 1];
+// ========================================
+// INDEXOF - First occurrence
+// ========================================
+console.log(arr.indexOf(3));  // 2
+console.log(arr.indexOf(10)); // -1 (not found)
+// Start from index
+console.log(arr.indexOf(3, 3)); // 5 (search from index 3)
+// ========================================
+// LASTINDEXOF - Last occurrence
+// ========================================
+console.log(arr.lastIndexOf(3)); // 5
+console.log(arr.lastIndexOf(2)); // 6
+// ========================================
+// INCLUDES - Check existence (ES7)
+// ========================================
+console.log(arr.includes(3));  // true
+console.log(arr.includes(10)); // false
+// Start from index
+console.log(arr.includes(3, 6)); // false (search from index 6)
+// ========================================
+// NaN HANDLING
+// ========================================
+const withNaN = [1, 2, NaN, 4];
+// indexOf doesn't work with NaN
+console.log(withNaN.indexOf(NaN)); // -1 (wrong!)
+// includes handles NaN correctly
+console.log(withNaN.includes(NaN)); // true
+// ========================================
+// CHECKING FOR ELEMENT
+// ========================================
+// Old way
+if (arr.indexOf(3) !== -1) {
+  console.log('Found!');
+}
+// Modern way (cleaner)
+if (arr.includes(3)) {
+  console.log('Found!');
+}
+// ========================================
+// WITH OBJECTS
+// ========================================
+const users = [{ id: 1 }, { id: 2 }];
+// indexOf/includes check reference, not value!
+console.log(users.indexOf({ id: 1 })); // -1 (different reference)
+console.log(users.includes({ id: 1 })); // false
+// Use find instead for objects
+const found = users.find(u => u.id === 1);
+console.log(found); // { id: 1 }
+\`\`\`
+### some() and every()
+\`\`\`js
+// some() - At least ONE element passes test
+// every() - ALL elements pass test
+const numbers = [1, 2, 3, 4, 5];
+// ========================================
+// SOME - Returns true if ANY element matches
+// ========================================
+console.log(numbers.some(n => n > 3));  // true
+console.log(numbers.some(n => n > 10)); // false
+// Check if any user is admin
+const users = [
+  { name: 'John', role: 'user' },
+  { name: 'Jane', role: 'admin' }
+];
+const hasAdmin = users.some(u => u.role === 'admin');
+console.log(hasAdmin); // true
+// Empty array
+console.log([].some(n => n > 0)); // false (vacuous truth)
+// ========================================
+// EVERY - Returns true if ALL elements match
+// ========================================
+console.log(numbers.every(n => n > 0)); // true
+console.log(numbers.every(n => n > 3)); // false
+// Check if all items in stock
+const products = [
+  { name: 'A', inStock: true },
+  { name: 'B', inStock: true },
+  { name: 'C', inStock: false }
+];
+const allInStock = products.every(p => p.inStock);
+console.log(allInStock); // false
+// Empty array
+console.log([].every(n => n > 100)); // true (vacuous truth)
+// ========================================
+// SHORT-CIRCUIT BEHAVIOR
+// ========================================
+// some: Stops when first true found
+// every: Stops when first false found
+const data = [1, 2, 3, 4, 5];
+data.some(n => {
+  console.log('Checking:', n);
+  return n === 3;
+});
+// Logs: Checking: 1, Checking: 2, Checking: 3 (stops early)
+data.every(n => {
+  console.log('Checking:', n);
+  return n < 3;
+});
+// Logs: Checking: 1, Checking: 2, Checking: 3 (stops at first fail)
+// ========================================
+// PRACTICAL PATTERNS
+// ========================================
+// Validation
+const isValidForm = [
+  { field: 'name', value: 'John' },
+  { field: 'email', value: 'john@example.com' }
+].every(f => f.value.length > 0);
+// Check array intersection
+const arr1 = [1, 2, 3];
+const arr2 = [3, 4, 5];
+const hasCommon = arr1.some(x => arr2.includes(x));
+console.log(hasCommon); // true
+// Check if array is subset
+const isSubset = arr1.every(x => [1, 2, 3, 4, 5].includes(x));
+console.log(isSubset); // true
+\`\`\`
+---
+## ITERATION METHODS
+### forEach()
+\`\`\`js
+// forEach(callback(element, index, array))
+// Executes callback for each element
+// Returns undefined - can't chain!
+const numbers = [1, 2, 3, 4, 5];
+// ========================================
+// BASIC USAGE
+// ========================================
+numbers.forEach(n => console.log(n));
+// 1, 2, 3, 4, 5
+// With index
+numbers.forEach((n, i) => console.log(\`\${i}: \${n}\`));
+// 0: 1, 1: 2, 2: 3, 3: 4, 4: 5
+// ========================================
+// SIDE EFFECTS
+// ========================================
+// forEach is for side effects (logging, updating external state)
+let sum = 0;
+numbers.forEach(n => sum += n);
+console.log(sum); // 15
+// Update DOM
+document.querySelectorAll('.item').forEach((el, i) => {
+  el.textContent = \`Item \${i + 1}\`;
+});
+// ========================================
+// CANNOT BREAK OUT OF FOREACH
+// ========================================
+// return only skips current iteration, doesn't break
+numbers.forEach(n => {
+  if (n === 3) return; // Doesn't stop loop!
+  console.log(n);
+}); // 1, 2, 4, 5
+// To break early, use:
+// 1. for...of with break
+for (const n of numbers) {
+  if (n === 3) break;
+  console.log(n);
+} // 1, 2
+// 2. some() (returns true to stop)
+numbers.some(n => {
+  if (n === 3) return true; // Stops iteration
+  console.log(n);
+  return false;
+}); // 1, 2
+// 3. Regular for loop
+for (let i = 0; i < numbers.length; i++) {
+  if (numbers[i] === 3) break;
+  console.log(numbers[i]);
+}
+// ========================================
+// ASYNC GOTCHA
+// ========================================
+// forEach doesn't wait for async callbacks!
+// WRONG:
+async function processItems(items) {
+  items.forEach(async (item) => {
+    await processItem(item); // Doesn't wait!
+  });
+  console.log('Done'); // Runs immediately!
+}
+// RIGHT: Use for...of
+async function processItemsCorrect(items) {
+  for (const item of items) {
+    await processItem(item);
   }
-  return result;
+  console.log('Done'); // Runs after all processed
+}
+// Or use Promise.all for parallel:
+async function processItemsParallel(items) {
+  await Promise.all(items.map(item => processItem(item)));
+  console.log('Done');
+}
+// ========================================
+// THISARG PARAMETER
+// ========================================
+const obj = {
+  multiplier: 2,
+  multiply(arr) {
+    const result = [];
+    arr.forEach(function(n) {
+      result.push(n * this.multiplier);
+    }, this); // Pass 'this' as second argument
+    return result;
+  }
 };
-
-Array.prototype.myFilter = function(callback) {
+console.log(obj.multiply([1, 2, 3])); // [2, 4, 6]
+// Or just use arrow function (inherits this)
+const obj2 = {
+  multiplier: 2,
+  multiply(arr) {
+    const result = [];
+    arr.forEach(n => {
+      result.push(n * this.multiplier);
+    });
+    return result;
+  }
+};
+\`\`\`
+### entries(), keys(), values()
+\`\`\`js
+const arr = ['a', 'b', 'c'];
+// ========================================
+// ENTRIES - [index, value] pairs
+// ========================================
+const entries = arr.entries();
+console.log([...entries]); // [[0,'a'], [1,'b'], [2,'c']]
+for (const [index, value] of arr.entries()) {
+  console.log(\`\${index}: \${value}\`);
+}
+// 0: a
+// 1: b
+// 2: c
+// ========================================
+// KEYS - Indices
+// ========================================
+const keys = arr.keys();
+console.log([...keys]); // [0, 1, 2]
+for (const index of arr.keys()) {
+  console.log(index);
+} // 0, 1, 2
+// ========================================
+// VALUES - Values (default iterator)
+// ========================================
+const values = arr.values();
+console.log([...values]); // ['a', 'b', 'c']
+for (const value of arr.values()) {
+  console.log(value);
+} // a, b, c
+// Same as:
+for (const value of arr) {
+  console.log(value);
+}
+\`\`\`
+---
+## STATIC ARRAY METHODS
+\`\`\`js
+// ========================================
+// ARRAY.ISARRAY()
+// ========================================
+console.log(Array.isArray([1, 2, 3]));    // true
+console.log(Array.isArray('hello'));       // false
+console.log(Array.isArray({ length: 3 })); // false
+console.log(Array.isArray(new Array()));   // true
+// Why not use instanceof?
+// instanceof fails across different JavaScript contexts (iframes)
+const iframe = document.createElement('iframe');
+document.body.appendChild(iframe);
+const iframeArray = iframe.contentWindow.Array;
+const arr = new iframeArray(1, 2, 3);
+console.log(arr instanceof Array);  // false (different Array constructor)
+console.log(Array.isArray(arr));    // true (works correctly)
+// ========================================
+// ARRAY.FROM() - See earlier section
+// ========================================
+// ========================================
+// ARRAY.OF() - See earlier section
+// ========================================
+\`\`\`
+---
+## IMPLEMENT ARRAY METHODS FROM SCRATCH
+Understanding the internals helps in interviews and deepens understanding.
+### Implement map()
+\`\`\`js
+Array.prototype.myMap = function(callback, thisArg) {
+  // Handle null/undefined 'this'
+  if (this == null) {
+    throw new TypeError('Cannot read properties of null/undefined');
+  }
+  // Ensure callback is a function
+  if (typeof callback !== 'function') {
+    throw new TypeError(callback + ' is not a function');
+  }
   const result = [];
-  for (let i = 0; i < this.length; i++) {
-    if (callback(this[i], i, this)) {
-      result.push(this[i]);
+  const arr = Object(this); // Convert to object
+  const len = arr.length >>> 0; // Ensure non-negative integer
+  for (let i = 0; i < len; i++) {
+    // Check if index exists (handles sparse arrays)
+    if (i in arr) {
+      result[i] = callback.call(thisArg, arr[i], i, arr);
     }
   }
   return result;
 };
-
+// Test
+console.log([1, 2, 3].myMap(x => x * 2)); // [2, 4, 6]
+console.log([1, , 3].myMap(x => x * 2)); // [2, empty, 6] - sparse
+\`\`\`
+### Implement filter()
+\`\`\`js
+Array.prototype.myFilter = function(callback, thisArg) {
+  if (this == null) {
+    throw new TypeError('Cannot read properties of null/undefined');
+  }
+  if (typeof callback !== 'function') {
+    throw new TypeError(callback + ' is not a function');
+  }
+  const result = [];
+  const arr = Object(this);
+  const len = arr.length >>> 0;
+  for (let i = 0; i < len; i++) {
+    if (i in arr) {
+      const value = arr[i];
+      // Only push if callback returns truthy
+      if (callback.call(thisArg, value, i, arr)) {
+        result.push(value);
+      }
+    }
+  }
+  return result;
+};
+// Test
+console.log([1, 2, 3, 4, 5].myFilter(x => x % 2 === 0)); // [2, 4]
+\`\`\`
+### Implement reduce()
+\`\`\`js
 Array.prototype.myReduce = function(callback, initialValue) {
-  let acc = initialValue;
+  if (this == null) {
+    throw new TypeError('Cannot read properties of null/undefined');
+  }
+  if (typeof callback !== 'function') {
+    throw new TypeError(callback + ' is not a function');
+  }
+  const arr = Object(this);
+  const len = arr.length >>> 0;
+  let accumulator;
   let startIndex = 0;
-  
-  if (acc === undefined) {
-    acc = this[0];
-    startIndex = 1;
+  // Check if initialValue provided
+  if (arguments.length >= 2) {
+    accumulator = initialValue;
+  } else {
+    // Find first existing index for initial value
+    let found = false;
+    while (startIndex < len && !found) {
+      if (startIndex in arr) {
+        accumulator = arr[startIndex];
+        found = true;
+      }
+      startIndex++;
+    }
+    if (!found) {
+      throw new TypeError('Reduce of empty array with no initial value');
+    }
   }
-  
-  for (let i = startIndex; i < this.length; i++) {
-    acc = callback(acc, this[i], i, this);
+  for (let i = startIndex; i < len; i++) {
+    if (i in arr) {
+      accumulator = callback(accumulator, arr[i], i, arr);
+    }
   }
-  
+  return accumulator;
+};
+// Test
+console.log([1, 2, 3, 4].myReduce((a, b) => a + b, 0)); // 10
+console.log([1, 2, 3, 4].myReduce((a, b) => a + b));    // 10
+\`\`\`
+### Implement find()
+\`\`\`js
+Array.prototype.myFind = function(callback, thisArg) {
+  if (this == null) {
+    throw new TypeError('Cannot read properties of null/undefined');
+  }
+  if (typeof callback !== 'function') {
+    throw new TypeError(callback + ' is not a function');
+  }
+  const arr = Object(this);
+  const len = arr.length >>> 0;
+  for (let i = 0; i < len; i++) {
+    if (i in arr) {
+      const value = arr[i];
+      if (callback.call(thisArg, value, i, arr)) {
+        return value; // Return first matching element
+      }
+    }
+  }
+  return undefined; // Not found
+};
+// Test
+console.log([1, 2, 3, 4].myFind(x => x > 2)); // 3
+console.log([1, 2, 3, 4].myFind(x => x > 10)); // undefined
+\`\`\`
+### Implement flat()
+\`\`\`js
+Array.prototype.myFlat = function(depth = 1) {
+  if (this == null) {
+    throw new TypeError('Cannot read properties of null/undefined');
+  }
+  const arr = Object(this);
+  const result = [];
+  function flatten(arr, d) {
+    for (let i = 0; i < arr.length; i++) {
+      if (i in arr) {
+        const value = arr[i];
+        if (Array.isArray(value) && d > 0) {
+          flatten(value, d - 1);
+        } else {
+          result.push(value);
+        }
+      }
+    }
+  }
+  flatten(arr, depth);
+  return result;
+};
+// Test
+console.log([1, [2, [3, [4]]]].myFlat(1)); // [1, 2, [3, [4]]]
+console.log([1, [2, [3, [4]]]].myFlat(2)); // [1, 2, 3, [4]]
+console.log([1, [2, [3, [4]]]].myFlat(Infinity)); // [1, 2, 3, 4]
+\`\`\`
+### Implement some() and every()
+\`\`\`js
+Array.prototype.mySome = function(callback, thisArg) {
+  if (this == null) throw new TypeError();
+  if (typeof callback !== 'function') throw new TypeError();
+  const arr = Object(this);
+  const len = arr.length >>> 0;
+  for (let i = 0; i < len; i++) {
+    if (i in arr && callback.call(thisArg, arr[i], i, arr)) {
+      return true; // Short-circuit on first true
+    }
+  }
+  return false;
+};
+Array.prototype.myEvery = function(callback, thisArg) {
+  if (this == null) throw new TypeError();
+  if (typeof callback !== 'function') throw new TypeError();
+  const arr = Object(this);
+  const len = arr.length >>> 0;
+  for (let i = 0; i < len; i++) {
+    if (i in arr && !callback.call(thisArg, arr[i], i, arr)) {
+      return false; // Short-circuit on first false
+    }
+  }
+  return true;
+};
+// Test
+console.log([1, 2, 3].mySome(x => x > 2));  // true
+console.log([1, 2, 3].myEvery(x => x > 0)); // true
+\`\`\`
+---
+## COMMON INTERVIEW QUESTIONS
+### Q1: What's the difference between map() and forEach()?
+\`\`\`js
+// forEach:
+// - Returns undefined
+// - Used for side effects
+// - Cannot chain
+// map:
+// - Returns new array
+// - Used for transformation
+// - Can chain
+const arr = [1, 2, 3];
+const forEachResult = arr.forEach(x => x * 2);
+console.log(forEachResult); // undefined
+const mapResult = arr.map(x => x * 2);
+console.log(mapResult); // [2, 4, 6]
+// Chaining
+arr.map(x => x * 2).filter(x => x > 2); // Works
+// arr.forEach(x => x * 2).filter(x => x > 2); // Error!
+\`\`\`
+### Q2: What's the difference between slice() and splice()?
+\`\`\`js
+// slice: NON-MUTATING, returns portion
+// splice: MUTATING, modifies original
+const arr1 = [1, 2, 3, 4, 5];
+const sliced = arr1.slice(1, 3);
+console.log(arr1);   // [1, 2, 3, 4, 5] - unchanged
+console.log(sliced); // [2, 3]
+const arr2 = [1, 2, 3, 4, 5];
+const spliced = arr2.splice(1, 2);
+console.log(arr2);   // [1, 4, 5] - modified!
+console.log(spliced); // [2, 3] - removed elements
+\`\`\`
+### Q3: How do you remove duplicates from an array?
+\`\`\`js
+const arr = [1, 2, 2, 3, 3, 3, 4];
+// Method 1: Set (most common)
+const unique1 = [...new Set(arr)];
+console.log(unique1); // [1, 2, 3, 4]
+// Method 2: filter with indexOf
+const unique2 = arr.filter((value, index) => 
+  arr.indexOf(value) === index
+);
+// Method 3: reduce
+const unique3 = arr.reduce((acc, value) => {
+  if (!acc.includes(value)) acc.push(value);
   return acc;
-};`,
-      language: 'javascript'
-    },
+}, []);
+// For objects - use Map or custom logic
+const users = [
+  { id: 1, name: 'John' },
+  { id: 2, name: 'Jane' },
+  { id: 1, name: 'John' }
+];
+const uniqueUsers = [...new Map(users.map(u => [u.id, u])).values()];
+\`\`\`
+### Q4: How do you flatten an array?
+\`\`\`js
+const nested = [1, [2, [3, [4]]]];
+// Method 1: flat()
+console.log(nested.flat(Infinity)); // [1, 2, 3, 4]
+// Method 2: reduce + recursion
+function flatten(arr) {
+  return arr.reduce((acc, val) => {
+    return acc.concat(Array.isArray(val) ? flatten(val) : val);
+  }, []);
+}
+// Method 3: Stack-based (no recursion)
+function flattenIterative(arr) {
+  const stack = [...arr];
+  const result = [];
+  while (stack.length) {
+    const next = stack.pop();
+    if (Array.isArray(next)) {
+      stack.push(...next);
+    } else {
+      result.unshift(next);
+    }
+  }
+  return result;
+}
+\`\`\`
+### Q5: Find the intersection of two arrays
+\`\`\`js
+const arr1 = [1, 2, 3, 4, 5];
+const arr2 = [3, 4, 5, 6, 7];
+// Method 1: filter + includes
+const intersection = arr1.filter(x => arr2.includes(x));
+console.log(intersection); // [3, 4, 5]
+// Method 2: Set (more efficient for large arrays)
+const set2 = new Set(arr2);
+const intersection2 = arr1.filter(x => set2.has(x));
+// Find union
+const union = [...new Set([...arr1, ...arr2])];
+console.log(union); // [1, 2, 3, 4, 5, 6, 7]
+// Find difference (in arr1 but not in arr2)
+const difference = arr1.filter(x => !arr2.includes(x));
+console.log(difference); // [1, 2]
+\`\`\`
+### Q6: Find the most frequent element
+\`\`\`js
+const arr = ['a', 'b', 'a', 'c', 'a', 'b'];
+function mostFrequent(arr) {
+  const counts = arr.reduce((acc, val) => {
+    acc[val] = (acc[val] || 0) + 1;
+    return acc;
+  }, {});
+  return Object.entries(counts).reduce((a, b) => 
+    b[1] > a[1] ? b : a
+  )[0];
+}
+console.log(mostFrequent(arr)); // 'a'
+\`\`\`
+### Q7: Chunk an array into smaller arrays
+\`\`\`js
+function chunk(arr, size) {
+  const result = [];
+  for (let i = 0; i < arr.length; i += size) {
+    result.push(arr.slice(i, i + size));
+  }
+  return result;
+}
+console.log(chunk([1, 2, 3, 4, 5], 2));
+// [[1, 2], [3, 4], [5]]
+// Using reduce
+function chunkReduce(arr, size) {
+  return arr.reduce((acc, _, i) => {
+    if (i % size === 0) {
+      acc.push(arr.slice(i, i + size));
+    }
+    return acc;
+  }, []);
+}
+\`\`\`
+### Q8: Rotate an array
+\`\`\`js
+// Rotate right by k positions
+function rotateRight(arr, k) {
+  const n = arr.length;
+  k = k % n; // Handle k > n
+  return [...arr.slice(-k), ...arr.slice(0, -k)];
+}
+console.log(rotateRight([1, 2, 3, 4, 5], 2)); // [4, 5, 1, 2, 3]
+// Rotate left by k positions
+function rotateLeft(arr, k) {
+  const n = arr.length;
+  k = k % n;
+  return [...arr.slice(k), ...arr.slice(0, k)];
+}
+console.log(rotateLeft([1, 2, 3, 4, 5], 2)); // [3, 4, 5, 1, 2]
+\`\`\`
+### Q9: What's the output?
+\`\`\`js
+// Question 1
+console.log(['1', '2', '3'].map(parseInt));
+// Answer: [1, NaN, NaN]
+// Why: map passes (value, index), parseInt uses index as radix
+// parseInt('1', 0) = 1, parseInt('2', 1) = NaN, parseInt('3', 2) = NaN
+// Question 2
+const arr = [1, 2, 3];
+arr[10] = 11;
+console.log(arr.length); // 11
+console.log(arr.filter(x => x)); // [1, 2, 3, 11] - empty slots skipped
+// Question 3
+console.log([1, 2, 3].fill(4, 1, 2)); // [1, 4, 3]
+// Question 4
+console.log([...'hello']); // ['h', 'e', 'l', 'l', 'o']
+// Question 5
+const a = [1, 2, 3];
+const b = a;
+b.push(4);
+console.log(a); // [1, 2, 3, 4] - same reference!
+\`\`\`
+---
+## PERFORMANCE CONSIDERATIONS
+\`\`\`js
+// ========================================
+// TIME COMPLEXITY
+// ========================================
+// push, pop: O(1)
+// shift, unshift: O(n) - must re-index
+// splice: O(n)
+// slice: O(n)
+// concat: O(n)
+// indexOf, includes: O(n)
+// find, findIndex: O(n)
+// map, filter, reduce: O(n)
+// sort: O(n log n)
+// ========================================
+// AVOID MULTIPLE ITERATIONS
+// ========================================
+// BAD: Multiple passes
+const result = arr
+  .filter(x => x > 0)
+  .map(x => x * 2)
+  .reduce((a, b) => a + b, 0);
+// BETTER: Single pass with reduce
+const result2 = arr.reduce((acc, x) => {
+  if (x > 0) acc += x * 2;
+  return acc;
+}, 0);
+// ========================================
+// USE SET FOR LOOKUPS
+// ========================================
+// BAD: O(n) lookup with includes
+const large = [/* thousands of items */];
+arr.filter(x => large.includes(x)); // O(n*m)
+// GOOD: O(1) lookup with Set
+const largeSet = new Set(large);
+arr.filter(x => largeSet.has(x)); // O(n)
+// ========================================
+// AVOID ARRAY MODIFICATIONS IN LOOPS
+// ========================================
+// BAD: Growing array in loop
+let result3 = [];
+for (const item of data) {
+  result3 = result3.concat([item]); // Creates new array each time!
+}
+// GOOD: Push to existing array
+const result4 = [];
+for (const item of data) {
+  result4.push(item);
+}
+\`\`\`
+---
+## QUICK REFERENCE CHEAT SHEET
+| Method | Mutates | Returns | Purpose |
+|--------|---------|---------|---------|
+| push() | Yes | length | Add to end |
+| pop() | Yes | element | Remove from end |
+| shift() | Yes | element | Remove from start |
+| unshift() | Yes | length | Add to start |
+| splice() | Yes | removed[] | Add/remove anywhere |
+| sort() | Yes | array | Sort in place |
+| reverse() | Yes | array | Reverse in place |
+| fill() | Yes | array | Fill with value |
+| map() | No | array | Transform elements |
+| filter() | No | array | Filter elements |
+| reduce() | No | any | Accumulate to value |
+| slice() | No | array | Extract portion |
+| concat() | No | array | Merge arrays |
+| flat() | No | array | Flatten nested |
+| find() | No | element | First match |
+| findIndex() | No | number | Index of first match |
+| indexOf() | No | number | Index of value |
+| includes() | No | boolean | Check existence |
+| some() | No | boolean | Any match? |
+| every() | No | boolean | All match? |
+| forEach() | No | undefined | Iterate (side effects) |
+---
+## KEY TAKEAWAYS FOR INTERVIEWS
+1. **Know which methods mutate** - splice, sort, reverse, push, pop, shift, unshift
+2. **Use immutable patterns** - spread, slice, map, filter for React/Redux
+3. **Understand reduce** - Can implement map, filter, and more
+4. **Handle edge cases** - Empty arrays, sparse arrays, NaN
+5. **Be able to implement methods** - Shows deep understanding
+6. **Know performance** - shift/unshift are O(n), use Set for lookups
+7. **Avoid common gotchas** - parseInt with map, sort without compare function
+8. **Chain appropriately** - map/filter/reduce, not forEach
+9. **ES2023 methods** - toSorted, toReversed, toSpliced, findLast
+10. **Array.from** - Create arrays from iterables and array-likes`,
+  language: 'javascript'
+},
 
     // ==========================================
     // SECTION 5: FUNCTIONS & FUNCTIONAL PROGRAMMING
     // ==========================================
-    {
-      id: 'interview-functions',
-      title: 'Functions - All Types',
-      content: `# Functions - Interview Questions
-
-## Function Types
-1. Function Declaration
-2. Function Expression
-3. Arrow Function
-4. IIFE
-5. Generator Function
-6. Async Function
-
+     {
+  id: 'interview-functions',
+  title: 'Functions - All Types',
+  content: `# Functions - Complete Interview Guide
+## What is a Function?
+A function is a reusable block of code designed to perform a specific task. In JavaScript, functions are first-class citizens, meaning they can be assigned to variables, passed as arguments, returned from other functions, and have properties and methods.
+## Why Functions Matter
+Functions are fundamental to JavaScript because:
+- They enable code reuse and modularity
+- They create scope and closures
+- They're the building blocks of functional programming
+- They enable powerful patterns like callbacks, promises, and higher-order functions
+- Understanding functions deeply is crucial for interviews
+## Function Types in JavaScript
+1. **Function Declaration** - Hoisted, named function
+2. **Function Expression** - Not hoisted, can be anonymous
+3. **Arrow Function** - Concise syntax, lexical 'this'
+4. **IIFE** - Immediately Invoked Function Expression
+5. **Generator Function** - Can pause and resume execution
+6. **Async Function** - Built-in promise handling
 ## Key Concepts
-- First-class functions
-- Higher-order functions
-- Pure functions
-- Function composition`,
-      codeExample: `// ===== FUNCTION TYPES =====
-
-// 1. Function Declaration - Hoisted
+- First-class functions (functions as values)
+- Higher-order functions (functions operating on functions)
+- Pure functions (no side effects, deterministic)
+- Function composition (combining functions)
+- Closures (functions remembering their scope)
+- Currying and partial application
+---
+## FUNCTION DECLARATION
+Function declarations are the most traditional way to define functions. They are hoisted, meaning you can call them before they appear in the code.
+\`\`\`js
+// Function Declaration - Hoisted to the top of its scope
+// Can be called BEFORE the declaration appears in code
+console.log(greet('John')); // "Hello, John!" - Works due to hoisting
 function greet(name) {
-  return 'Hello, ' + name;
+  return 'Hello, ' + name + '!';
 }
-
-// 2. Function Expression - Not hoisted
+// Function declarations are hoisted completely
+// Both the name AND the implementation are available
+// This works:
+sayHi(); // "Hi there!"
+function sayHi() {
+  console.log('Hi there!');
+}
+// Function declarations create a variable with the function name
+// in the current scope
+console.log(typeof greet); // "function"
+// Hoisting example - what JavaScript actually does:
+// JavaScript moves declarations to the top, like this:
+// function greet(name) { return 'Hello, ' + name + '!'; }
+// console.log(greet('John'));
+\`\`\`
+### Function Declaration in Blocks
+\`\`\`js
+// In strict mode, function declarations are block-scoped
+'use strict';
+if (true) {
+  function blockFunction() {
+    return 'Inside block';
+  }
+  console.log(blockFunction()); // "Inside block"
+}
+// console.log(blockFunction()); // ReferenceError in strict mode
+// In non-strict mode, behavior varies by browser - avoid this pattern!
+// Better approach: use function expressions
+let myFunc;
+if (true) {
+  myFunc = function() {
+    return 'Inside block';
+  };
+}
+console.log(myFunc()); // "Inside block"
+\`\`\`
+---
+## FUNCTION EXPRESSION
+Function expressions assign a function to a variable. They are NOT hoisted, so you must define them before use.
+\`\`\`js
+// Function Expression - NOT hoisted
+// console.log(greet2('John')); // TypeError: greet2 is not a function
 const greet2 = function(name) {
   return 'Hello, ' + name;
 };
-
-// Named Function Expression
-const greet3 = function sayHello(name) {
+console.log(greet2('John')); // "Hello, John" - Works after definition
+// The variable declaration IS hoisted, but the assignment is not
+// JavaScript sees it like this:
+// var greet2; // hoisted (undefined)
+// console.log(greet2('John')); // Error: greet2 is not a function
+// greet2 = function(name) { ... }; // assigned later
+// Anonymous function expression (no name after 'function')
+const anonymous = function(x) {
+  return x * 2;
+};
+// Named function expression - the name is only available inside
+const factorial = function fact(n) {
+  if (n <= 1) return 1;
+  return n * fact(n - 1); // 'fact' can be used for recursion
+};
+console.log(factorial(5)); // 120
+// console.log(fact(5)); // ReferenceError: fact is not defined
+// Benefits of named function expressions:
+// 1. Self-reference for recursion
+// 2. Better stack traces for debugging
+// 3. More descriptive code
+\`\`\`
+### Why Use Function Expressions?
+\`\`\`js
+// 1. Conditional function creation
+let calculate;
+if (useNewAlgorithm) {
+  calculate = function(x) { return x * 2; };
+} else {
+  calculate = function(x) { return x + x; };
+}
+// 2. As arguments to other functions (callbacks)
+setTimeout(function() {
+  console.log('Delayed message');
+}, 1000);
+// 3. As object methods
+const calculator = {
+  add: function(a, b) { return a + b; },
+  subtract: function(a, b) { return a - b; }
+};
+// 4. As IIFE (Immediately Invoked Function Expression)
+const result = (function(x) {
+  return x * 2;
+})(5);
+console.log(result); // 10
+// 5. Creating closures
+function createCounter() {
+  let count = 0;
+  return function() {
+    return ++count;
+  };
+}
+const counter = createCounter();
+console.log(counter()); // 1
+console.log(counter()); // 2
+\`\`\`
+---
+## ARROW FUNCTIONS
+Arrow functions provide a concise syntax and have lexical 'this' binding. Introduced in ES6, they're now widely used.
+\`\`\`js
+// Basic arrow function syntax
+const greet = (name) => {
   return 'Hello, ' + name;
-  // sayHello can be used for recursion inside
 };
-
-// 3. Arrow Function
-const greet4 = (name) => 'Hello, ' + name;
-
-// Arrow with block body
-const greet5 = (name) => {
-  const greeting = 'Hello';
-  return greeting + ', ' + name;
+// Concise body - implicit return (no braces, no return keyword)
+const greetShort = (name) => 'Hello, ' + name;
+// Single parameter - parentheses optional
+const double = x => x * 2;
+// No parameters - empty parentheses required
+const sayHello = () => 'Hello!';
+// Multiple parameters - parentheses required
+const add = (a, b) => a + b;
+// Returning object literal - wrap in parentheses
+// Without parens, braces are interpreted as function body
+const createPerson = (name, age) => ({ name, age });
+console.log(createPerson('John', 30)); // { name: 'John', age: 30 }
+// Multi-line with explicit return
+const calculate = (a, b, operation) => {
+  const result = operation(a, b);
+  console.log('Result:', result);
+  return result;
 };
-
-// 4. IIFE - Immediately Invoked Function Expression
-(function() {
-  console.log('I run immediately');
-})();
-
-// Arrow IIFE
-(() => {
-  console.log('Arrow IIFE');
-})();
-
-// IIFE with parameters
-((name) => {
-  console.log('Hello, ' + name);
-})('John');
-
-// 5. Generator Function
-function* numberGenerator() {
-  yield 1;
-  yield 2;
-  yield 3;
-}
-
-const gen = numberGenerator();
-console.log(gen.next()); // { value: 1, done: false }
-console.log(gen.next()); // { value: 2, done: false }
-
-// 6. Async Function
-async function fetchData() {
-  const response = await fetch('/api/data');
-  return response.json();
-}
-
-// ===== ARROW FUNCTIONS DIFFERENCES =====
-
-// No own 'this'
+// Arrow functions in array methods - very common pattern
+const numbers = [1, 2, 3, 4, 5];
+const doubled = numbers.map(n => n * 2);
+const evens = numbers.filter(n => n % 2 === 0);
+const sum = numbers.reduce((acc, n) => acc + n, 0);
+console.log(doubled); // [2, 4, 6, 8, 10]
+console.log(evens);   // [2, 4]
+console.log(sum);     // 15
+\`\`\`
+### Arrow Functions vs Regular Functions - Key Differences
+This is a very common interview question. Understanding these differences is crucial.
+\`\`\`js
+// ========================================
+// DIFFERENCE 1: 'this' BINDING
+// ========================================
+// Regular functions have their own 'this' based on HOW they're called
+// Arrow functions inherit 'this' from their enclosing scope (lexical this)
 const obj = {
-  name: 'Object',
-  regular: function() {
-    console.log(this.name); // 'Object'
+  name: 'MyObject',
+  // Regular function - 'this' is the object when called as method
+  regularMethod: function() {
+    console.log('Regular:', this.name); // 'MyObject'
+    // Nested regular function - 'this' is undefined/global
+    function nestedRegular() {
+      console.log('Nested regular:', this.name); // undefined
+    }
+    nestedRegular();
+    // Arrow function - inherits 'this' from regularMethod
+    const nestedArrow = () => {
+      console.log('Nested arrow:', this.name); // 'MyObject'
+    };
+    nestedArrow();
   },
-  arrow: () => {
-    console.log(this.name); // undefined (global this)
+  // Arrow method - 'this' is from enclosing scope (NOT the object!)
+  arrowMethod: () => {
+    console.log('Arrow:', this.name); // undefined (global scope)
   }
 };
-
-// No 'arguments' object
-function regular() {
-  console.log(arguments); // Works
+obj.regularMethod();
+obj.arrowMethod();
+// Common use case: Callbacks in methods
+const timer = {
+  seconds: 0,
+  // WRONG: regular function loses 'this'
+  startWrong: function() {
+    setInterval(function() {
+      this.seconds++; // 'this' is not timer!
+      console.log(this.seconds); // NaN
+    }, 1000);
+  },
+  // FIX 1: Save 'this' reference
+  startWithThat: function() {
+    const that = this;
+    setInterval(function() {
+      that.seconds++;
+      console.log(that.seconds);
+    }, 1000);
+  },
+  // FIX 2: Use bind
+  startWithBind: function() {
+    setInterval(function() {
+      this.seconds++;
+      console.log(this.seconds);
+    }.bind(this), 1000);
+  },
+  // FIX 3: Arrow function (best approach)
+  startWithArrow: function() {
+    setInterval(() => {
+      this.seconds++; // 'this' is timer
+      console.log(this.seconds);
+    }, 1000);
+  }
+};
+// ========================================
+// DIFFERENCE 2: NO 'arguments' OBJECT
+// ========================================
+function regularWithArgs() {
+  console.log(arguments); // [1, 2, 3] - array-like object
+  console.log(arguments[0]); // 1
 }
-
-const arrow = () => {
-  // console.log(arguments); // ReferenceError
+regularWithArgs(1, 2, 3);
+const arrowWithArgs = () => {
+  // console.log(arguments); // ReferenceError: arguments is not defined
 };
-
-// Rest params workaround
-const arrowWithArgs = (...args) => {
-  console.log(args);
+// Arrow functions can access arguments from enclosing regular function
+function outer() {
+  const inner = () => {
+    console.log(arguments); // arguments from outer
+  };
+  inner();
+}
+outer(1, 2, 3); // [1, 2, 3]
+// Use rest parameters instead
+const arrowWithRest = (...args) => {
+  console.log(args); // Real array: [1, 2, 3]
 };
-
-// Cannot be used as constructor
-const Person = (name) => {
+arrowWithRest(1, 2, 3);
+// ========================================
+// DIFFERENCE 3: CANNOT BE CONSTRUCTORS
+// ========================================
+function RegularPerson(name) {
+  this.name = name;
+}
+const john = new RegularPerson('John'); // Works
+console.log(john.name); // 'John'
+const ArrowPerson = (name) => {
   this.name = name;
 };
-// new Person('John'); // TypeError: Person is not a constructor
-
-// ===== HIGHER-ORDER FUNCTIONS =====
-// Function that takes/returns function
-
-// Takes function
+// const jane = new ArrowPerson('Jane'); // TypeError: ArrowPerson is not a constructor
+// Arrow functions don't have [[Construct]] internal method
+// They also don't have a 'prototype' property
+console.log(RegularPerson.prototype); // { constructor: ... }
+console.log(ArrowPerson.prototype);   // undefined
+// ========================================
+// DIFFERENCE 4: NO 'new.target'
+// ========================================
+function RegularConstructor() {
+  console.log(new.target); // RegularConstructor when called with new
+}
+new RegularConstructor();
+const ArrowConstructor = () => {
+  // console.log(new.target); // SyntaxError
+};
+// ========================================
+// DIFFERENCE 5: CANNOT HAVE DUPLICATE PARAMETERS
+// ========================================
+// Regular function (non-strict mode)
+function duplicateParams(a, a) {
+  return a; // Returns second 'a'
+}
+console.log(duplicateParams(1, 2)); // 2
+// Arrow function - always error
+// const arrowDuplicate = (a, a) => a; // SyntaxError
+// ========================================
+// DIFFERENCE 6: NO PROTOTYPE PROPERTY
+// ========================================
+function regularFunc() {}
+console.log(regularFunc.prototype); // { constructor: regularFunc }
+const arrowFunc = () => {};
+console.log(arrowFunc.prototype); // undefined
+\`\`\`
+### When to Use Arrow Functions
+\`\`\`js
+// ✅ USE Arrow Functions:
+// 1. Short callbacks
+array.map(x => x * 2);
+array.filter(x => x > 5);
+array.reduce((acc, x) => acc + x, 0);
+// 2. Preserving 'this' in callbacks
+class MyClass {
+  constructor() {
+    this.value = 42;
+  }
+  method() {
+    setTimeout(() => {
+      console.log(this.value); // 42 - 'this' preserved
+    }, 100);
+  }
+}
+// 3. Functional programming patterns
+const compose = (f, g) => x => f(g(x));
+const pipe = (...fns) => x => fns.reduce((v, f) => f(v), x);
+// 4. Simple, single-expression functions
+const isEven = n => n % 2 === 0;
+const square = n => n * n;
+// ❌ AVOID Arrow Functions:
+// 1. Object methods (when you need 'this' to be the object)
+const obj = {
+  value: 42,
+  getValue: () => this.value // undefined! Use regular function
+};
+// 2. Constructors
+const Person = (name) => { this.name = name; }; // Can't use 'new'
+// 3. When you need 'arguments'
+function sum() {
+  return Array.from(arguments).reduce((a, b) => a + b, 0);
+}
+// 4. Event handlers that need 'this' to be the element
+button.addEventListener('click', function() {
+  this.classList.toggle('active'); // 'this' is the button
+});
+// 5. Prototype methods
+function MyClass() {}
+MyClass.prototype.method = function() {
+  return this.value; // 'this' is the instance
+};
+// MyClass.prototype.method = () => this.value; // 'this' is not the instance!
+\`\`\`
+---
+## IMMEDIATELY INVOKED FUNCTION EXPRESSION (IIFE)
+An IIFE is a function that runs immediately after it's defined. It creates a private scope, avoiding global namespace pollution.
+\`\`\`js
+// Basic IIFE with function expression
+(function() {
+  console.log('I run immediately!');
+  const privateVar = 'I am private';
+  // privateVar is not accessible outside
+})();
+// The parentheses around the function make it an expression
+// The () at the end immediately invokes it
+// IIFE with arrow function
+(() => {
+  console.log('Arrow IIFE!');
+})();
+// IIFE with parameters
+(function(name, age) {
+  console.log(\`\${name} is \${age} years old\`);
+})('John', 30);
+// Arrow IIFE with parameters
+((x, y) => {
+  console.log('Sum:', x + y);
+})(5, 3);
+// IIFE that returns a value
+const result = (function() {
+  const a = 5;
+  const b = 10;
+  return a + b;
+})();
+console.log(result); // 15
+// Named IIFE (useful for debugging)
+(function myIIFE() {
+  console.log('Named IIFE');
+})();
+// Alternative syntax (less common)
+(function() {
+  console.log('Alternative 1');
+}());
+!function() {
+  console.log('Alternative 2 - using !');
+}();
++function() {
+  console.log('Alternative 3 - using +');
+}();
+\`\`\`
+### IIFE Use Cases
+\`\`\`js
+// ========================================
+// USE CASE 1: Creating Private Scope
+// ========================================
+// Avoid polluting global namespace
+(function() {
+  // These variables are private to this IIFE
+  const apiKey = 'secret-key-123';
+  const baseUrl = 'https://api.example.com';
+  function makeRequest(endpoint) {
+    return fetch(baseUrl + endpoint, {
+      headers: { 'X-API-Key': apiKey }
+    });
+  }
+  // Expose only what's needed
+  window.myAPI = {
+    getUsers: () => makeRequest('/users'),
+    getPosts: () => makeRequest('/posts')
+  };
+})();
+// apiKey and baseUrl are not accessible
+// console.log(apiKey); // ReferenceError
+// ========================================
+// USE CASE 2: Module Pattern
+// ========================================
+const Counter = (function() {
+  // Private state
+  let count = 0;
+  // Private function
+  function logChange(action) {
+    console.log(\`Count \${action}: \${count}\`);
+  }
+  // Public API
+  return {
+    increment() {
+      count++;
+      logChange('incremented');
+      return count;
+    },
+    decrement() {
+      count--;
+      logChange('decremented');
+      return count;
+    },
+    getCount() {
+      return count;
+    }
+  };
+})();
+Counter.increment(); // "Count incremented: 1"
+Counter.increment(); // "Count incremented: 2"
+console.log(Counter.getCount()); // 2
+// Counter.count is undefined - truly private
+// ========================================
+// USE CASE 3: Avoiding Variable Hoisting Issues
+// ========================================
+// Classic problem with var and loops
+for (var i = 0; i < 3; i++) {
+  setTimeout(function() {
+    console.log(i); // 3, 3, 3 (all reference the same i)
+  }, 100);
+}
+// IIFE solution (before 'let' existed)
+for (var i = 0; i < 3; i++) {
+  (function(j) {
+    setTimeout(function() {
+      console.log(j); // 0, 1, 2 (each has its own j)
+    }, 100);
+  })(i);
+}
+// Modern solution with let
+for (let i = 0; i < 3; i++) {
+  setTimeout(function() {
+    console.log(i); // 0, 1, 2 (let creates block scope)
+  }, 100);
+}
+// ========================================
+// USE CASE 4: Initialization Code
+// ========================================
+const config = (function() {
+  const env = process.env.NODE_ENV || 'development';
+  const configs = {
+    development: {
+      apiUrl: 'http://localhost:3000',
+      debug: true
+    },
+    production: {
+      apiUrl: 'https://api.example.com',
+      debug: false
+    }
+  };
+  return configs[env];
+})();
+// ========================================
+// USE CASE 5: Singleton Pattern
+// ========================================
+const Database = (function() {
+  let instance = null;
+  function createConnection() {
+    return {
+      host: 'localhost',
+      port: 5432,
+      query(sql) {
+        console.log('Executing:', sql);
+      }
+    };
+  }
+  return {
+    getInstance() {
+      if (!instance) {
+        instance = createConnection();
+        console.log('New connection created');
+      } else {
+        console.log('Returning existing connection');
+      }
+      return instance;
+    }
+  };
+})();
+const db1 = Database.getInstance(); // "New connection created"
+const db2 = Database.getInstance(); // "Returning existing connection"
+console.log(db1 === db2); // true - same instance
+\`\`\`
+---
+## GENERATOR FUNCTIONS
+Generator functions can pause execution and resume later. They produce a sequence of values on-demand (lazy evaluation).
+\`\`\`js
+// Generator function declaration (note the *)
+function* simpleGenerator() {
+  console.log('Start');
+  yield 1;
+  console.log('After first yield');
+  yield 2;
+  console.log('After second yield');
+  yield 3;
+  console.log('End');
+}
+// Calling a generator function returns a Generator object
+// The function body doesn't execute yet!
+const gen = simpleGenerator();
+console.log(gen.next()); // "Start" then { value: 1, done: false }
+console.log(gen.next()); // "After first yield" then { value: 2, done: false }
+console.log(gen.next()); // "After second yield" then { value: 3, done: false }
+console.log(gen.next()); // "End" then { value: undefined, done: true }
+// Generator expression (less common)
+const genExp = function*() {
+  yield 'a';
+  yield 'b';
+};
+// Generators are iterable
+function* letterGenerator() {
+  yield 'a';
+  yield 'b';
+  yield 'c';
+}
+for (const letter of letterGenerator()) {
+  console.log(letter); // 'a', 'b', 'c'
+}
+// Spread operator works too
+console.log([...letterGenerator()]); // ['a', 'b', 'c']
+\`\`\`
+### Generator Features
+\`\`\`js
+// ========================================
+// PASSING VALUES INTO GENERATORS
+// ========================================
+function* twoWayGenerator() {
+  const x = yield 'First yield';
+  console.log('Received:', x);
+  const y = yield 'Second yield';
+  console.log('Received:', y);
+  return 'Done';
+}
+const gen = twoWayGenerator();
+console.log(gen.next());        // { value: 'First yield', done: false }
+console.log(gen.next('Hello')); // "Received: Hello" { value: 'Second yield', done: false }
+console.log(gen.next('World')); // "Received: World" { value: 'Done', done: true }
+// ========================================
+// DELEGATING TO OTHER GENERATORS (yield*)
+// ========================================
+function* innerGenerator() {
+  yield 'inner 1';
+  yield 'inner 2';
+}
+function* outerGenerator() {
+  yield 'outer 1';
+  yield* innerGenerator(); // Delegate to inner
+  yield 'outer 2';
+}
+console.log([...outerGenerator()]); 
+// ['outer 1', 'inner 1', 'inner 2', 'outer 2']
+// Works with any iterable
+function* yieldArray() {
+  yield* [1, 2, 3];
+  yield* 'abc';
+}
+console.log([...yieldArray()]); // [1, 2, 3, 'a', 'b', 'c']
+// ========================================
+// ERROR HANDLING IN GENERATORS
+// ========================================
+function* errorGenerator() {
+  try {
+    yield 1;
+    yield 2;
+  } catch (e) {
+    console.log('Caught:', e);
+  }
+  yield 3;
+}
+const errGen = errorGenerator();
+console.log(errGen.next()); // { value: 1, done: false }
+console.log(errGen.throw(new Error('Oops'))); // "Caught: Error: Oops" { value: 3, done: false }
+// ========================================
+// GENERATOR.return()
+// ========================================
+function* countUp() {
+  let i = 0;
+  while (true) {
+    yield i++;
+  }
+}
+const counter = countUp();
+console.log(counter.next()); // { value: 0, done: false }
+console.log(counter.next()); // { value: 1, done: false }
+console.log(counter.return('Stopped')); // { value: 'Stopped', done: true }
+console.log(counter.next()); // { value: undefined, done: true }
+\`\`\`
+### Practical Generator Use Cases
+\`\`\`js
+// ========================================
+// USE CASE 1: Infinite Sequences
+// ========================================
+function* infiniteSequence() {
+  let i = 0;
+  while (true) {
+    yield i++;
+  }
+}
+function* fibonacciSequence() {
+  let [prev, curr] = [0, 1];
+  while (true) {
+    yield curr;
+    [prev, curr] = [curr, prev + curr];
+  }
+}
+// Take only what you need (lazy evaluation)
+function take(n, iterable) {
+  const result = [];
+  const iterator = iterable[Symbol.iterator]();
+  for (let i = 0; i < n; i++) {
+    const { value, done } = iterator.next();
+    if (done) break;
+    result.push(value);
+  }
+  return result;
+}
+console.log(take(5, fibonacciSequence())); // [1, 1, 2, 3, 5]
+console.log(take(10, infiniteSequence())); // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+// ========================================
+// USE CASE 2: ID Generator
+// ========================================
+function* idGenerator(prefix = 'id') {
+  let id = 1;
+  while (true) {
+    yield \`\${prefix}_\${id++}\`;
+  }
+}
+const userIds = idGenerator('user');
+console.log(userIds.next().value); // 'user_1'
+console.log(userIds.next().value); // 'user_2'
+const orderIds = idGenerator('order');
+console.log(orderIds.next().value); // 'order_1'
+// ========================================
+// USE CASE 3: Paginated Data
+// ========================================
+async function* fetchPages(url) {
+  let page = 1;
+  let hasMore = true;
+  while (hasMore) {
+    const response = await fetch(\`\${url}?page=\${page}\`);
+    const data = await response.json();
+    yield data.items;
+    hasMore = data.hasNextPage;
+    page++;
+  }
+}
+// Usage
+async function processAllPages() {
+  for await (const items of fetchPages('/api/products')) {
+    for (const item of items) {
+      console.log(item);
+    }
+  }
+}
+// ========================================
+// USE CASE 4: State Machine
+// ========================================
+function* trafficLight() {
+  while (true) {
+    yield 'green';
+    yield 'yellow';
+    yield 'red';
+  }
+}
+const light = trafficLight();
+console.log(light.next().value); // 'green'
+console.log(light.next().value); // 'yellow'
+console.log(light.next().value); // 'red'
+console.log(light.next().value); // 'green' (cycles)
+// ========================================
+// USE CASE 5: Tree Traversal
+// ========================================
+function* traverseTree(node) {
+  if (!node) return;
+  yield node.value;
+  yield* traverseTree(node.left);
+  yield* traverseTree(node.right);
+}
+const tree = {
+  value: 1,
+  left: {
+    value: 2,
+    left: { value: 4 },
+    right: { value: 5 }
+  },
+  right: {
+    value: 3,
+    right: { value: 6 }
+  }
+};
+console.log([...traverseTree(tree)]); // [1, 2, 4, 5, 3, 6]
+\`\`\`
+---
+## ASYNC FUNCTIONS
+Async functions provide a cleaner way to work with Promises. They make asynchronous code look synchronous.
+\`\`\`js
+// Async function declaration
+async function fetchUserData(userId) {
+  // 'await' pauses execution until Promise resolves
+  const response = await fetch(\`/api/users/\${userId}\`);
+  const data = await response.json();
+  return data; // Automatically wrapped in Promise
+}
+// Async function expression
+const fetchPosts = async function(userId) {
+  const response = await fetch(\`/api/users/\${userId}/posts\`);
+  return response.json();
+};
+// Async arrow function
+const fetchComments = async (postId) => {
+  const response = await fetch(\`/api/posts/\${postId}/comments\`);
+  return response.json();
+};
+// Async method in object
+const api = {
+  async getUser(id) {
+    const response = await fetch(\`/api/users/\${id}\`);
+    return response.json();
+  }
+};
+// Async method in class
+class UserService {
+  async getUser(id) {
+    const response = await fetch(\`/api/users/\${id}\`);
+    return response.json();
+  }
+}
+// Async functions ALWAYS return a Promise
+async function returnValue() {
+  return 42; // Same as: return Promise.resolve(42)
+}
+returnValue().then(value => console.log(value)); // 42
+\`\`\`
+### Error Handling in Async Functions
+\`\`\`js
+// ========================================
+// try/catch for error handling
+// ========================================
+async function fetchWithErrorHandling(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(\`HTTP error! status: \${response.status}\`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Fetch failed:', error.message);
+    // Re-throw, return default, or handle as needed
+    throw error;
+  }
+}
+// ========================================
+// Multiple await with shared error handling
+// ========================================
+async function fetchUserWithPosts(userId) {
+  try {
+    const user = await fetchUser(userId);
+    const posts = await fetchPosts(userId);
+    const comments = await fetchCommentsForPosts(posts);
+    return { user, posts, comments };
+  } catch (error) {
+    // Catches errors from any of the awaits
+    console.error('Error fetching user data:', error);
+    return null;
+  }
+}
+// ========================================
+// Individual error handling
+// ========================================
+async function fetchWithFallback(userId) {
+  let user;
+  try {
+    user = await fetchUser(userId);
+  } catch (error) {
+    user = { id: userId, name: 'Unknown' }; // Fallback
+  }
+  let posts;
+  try {
+    posts = await fetchPosts(userId);
+  } catch (error) {
+    posts = []; // Fallback to empty array
+  }
+  return { user, posts };
+}
+// ========================================
+// Handling errors with .catch() on individual awaits
+// ========================================
+async function fetchWithInlineCatch(userId) {
+  const user = await fetchUser(userId).catch(e => ({ id: userId, name: 'Unknown' }));
+  const posts = await fetchPosts(userId).catch(e => []);
+  return { user, posts };
+}
+\`\`\`
+### Parallel vs Sequential Execution
+\`\`\`js
+// ========================================
+// SEQUENTIAL (Slower) - Each await waits for previous
+// ========================================
+async function sequential() {
+  console.time('sequential');
+  const user = await fetchUser(1);       // Wait 1 second
+  const posts = await fetchPosts(1);      // Wait 1 second
+  const comments = await fetchComments(1); // Wait 1 second
+  // Total: ~3 seconds
+  console.timeEnd('sequential');
+  return { user, posts, comments };
+}
+// ========================================
+// PARALLEL (Faster) - All requests start together
+// ========================================
+async function parallel() {
+  console.time('parallel');
+  // Start all requests at once
+  const userPromise = fetchUser(1);
+  const postsPromise = fetchPosts(1);
+  const commentsPromise = fetchComments(1);
+  // Wait for all to complete
+  const user = await userPromise;
+  const posts = await postsPromise;
+  const comments = await commentsPromise;
+  // Total: ~1 second (max of all)
+  console.timeEnd('parallel');
+  return { user, posts, comments };
+}
+// ========================================
+// PARALLEL with Promise.all (preferred)
+// ========================================
+async function parallelWithAll() {
+  const [user, posts, comments] = await Promise.all([
+    fetchUser(1),
+    fetchPosts(1),
+    fetchComments(1)
+  ]);
+  return { user, posts, comments };
+}
+// ========================================
+// PARALLEL with Promise.allSettled (handle partial failures)
+// ========================================
+async function parallelWithSettled() {
+  const results = await Promise.allSettled([
+    fetchUser(1),
+    fetchPosts(1),
+    fetchComments(1)
+  ]);
+  return results.map((result, index) => {
+    if (result.status === 'fulfilled') {
+      return result.value;
+    } else {
+      console.error(\`Request \${index} failed:\`, result.reason);
+      return null;
+    }
+  });
+}
+// ========================================
+// Processing array items in parallel
+// ========================================
+async function fetchAllUsers(userIds) {
+  // ❌ WRONG: Sequential (each await waits)
+  const users = [];
+  for (const id of userIds) {
+    const user = await fetchUser(id);
+    users.push(user);
+  }
+  return users;
+  // ✅ RIGHT: Parallel with Promise.all
+  return Promise.all(userIds.map(id => fetchUser(id)));
+}
+// ========================================
+// Processing with concurrency limit
+// ========================================
+async function fetchWithLimit(urls, limit = 3) {
+  const results = [];
+  const executing = [];
+  for (const url of urls) {
+    const promise = fetch(url).then(r => r.json());
+    results.push(promise);
+    const e = promise.then(() => executing.splice(executing.indexOf(e), 1));
+    executing.push(e);
+    if (executing.length >= limit) {
+      await Promise.race(executing);
+    }
+  }
+  return Promise.all(results);
+}
+\`\`\`
+---
+## HIGHER-ORDER FUNCTIONS
+A higher-order function is a function that takes one or more functions as arguments, returns a function, or both. This is a core concept in functional programming.
+\`\`\`js
+// ========================================
+// FUNCTION AS ARGUMENT
+// ========================================
 function repeat(n, action) {
   for (let i = 0; i < n; i++) {
     action(i);
   }
 }
 repeat(3, console.log); // 0, 1, 2
-
-// Returns function
+repeat(3, i => console.log('Hello ' + i)); // Hello 0, Hello 1, Hello 2
+// Array methods are higher-order functions
+const numbers = [1, 2, 3, 4, 5];
+// map - transform each element
+const doubled = numbers.map(n => n * 2); // [2, 4, 6, 8, 10]
+// filter - keep elements that pass test
+const evens = numbers.filter(n => n % 2 === 0); // [2, 4]
+// reduce - accumulate to single value
+const sum = numbers.reduce((acc, n) => acc + n, 0); // 15
+// find - first element that passes test
+const firstEven = numbers.find(n => n % 2 === 0); // 2
+// some - at least one passes
+const hasEven = numbers.some(n => n % 2 === 0); // true
+// every - all pass
+const allPositive = numbers.every(n => n > 0); // true
+// ========================================
+// FUNCTION AS RETURN VALUE
+// ========================================
 function multiplier(factor) {
-  return (number) => number * factor;
+  // Returns a new function that "remembers" factor
+  return function(number) {
+    return number * factor;
+  };
 }
 const double = multiplier(2);
-console.log(double(5)); // 10
-
-// ===== FUNCTION COMPOSITION =====
+const triple = multiplier(3);
+console.log(double(5));  // 10
+console.log(triple(5));  // 15
+// Arrow function version
+const multiplierArrow = factor => number => number * factor;
+// ========================================
+// BOTH: Takes and Returns Functions
+// ========================================
+function compose(f, g) {
+  return function(x) {
+    return f(g(x));
+  };
+}
+const addOne = x => x + 1;
+const square = x => x * x;
+const addOneThenSquare = compose(square, addOne);
+console.log(addOneThenSquare(4)); // 25: (4+1)² = 25
+const squareThenAddOne = compose(addOne, square);
+console.log(squareThenAddOne(4)); // 17: 4² + 1 = 17
+\`\`\`
+### Creating Custom Higher-Order Functions
+\`\`\`js
+// ========================================
+// once - Function that only runs once
+// ========================================
+function once(fn) {
+  let called = false;
+  let result;
+  return function(...args) {
+    if (!called) {
+      called = true;
+      result = fn.apply(this, args);
+    }
+    return result;
+  };
+}
+const initialize = once(() => {
+  console.log('Initializing...');
+  return 'Initialized';
+});
+console.log(initialize()); // "Initializing..." "Initialized"
+console.log(initialize()); // "Initialized" (no log, returns cached)
+// ========================================
+// after - Function that runs after n calls
+// ========================================
+function after(n, fn) {
+  let count = 0;
+  return function(...args) {
+    count++;
+    if (count >= n) {
+      return fn.apply(this, args);
+    }
+  };
+}
+const afterThree = after(3, () => console.log('Third time!'));
+afterThree(); // nothing
+afterThree(); // nothing
+afterThree(); // "Third time!"
+// ========================================
+// before - Function that only runs first n times
+// ========================================
+function before(n, fn) {
+  let count = 0;
+  let result;
+  return function(...args) {
+    if (count < n) {
+      result = fn.apply(this, args);
+      count++;
+    }
+    return result;
+  };
+}
+const onlyThrice = before(3, () => console.log('Called!'));
+onlyThrice(); // "Called!"
+onlyThrice(); // "Called!"
+onlyThrice(); // "Called!"
+onlyThrice(); // (nothing, returns last result)
+// ========================================
+// delay - Delay function execution
+// ========================================
+function delay(fn, ms, ...args) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(fn(...args));
+    }, ms);
+  });
+}
+await delay(console.log, 1000, 'Delayed message');
+// ========================================
+// retry - Retry failed function
+// ========================================
+async function retry(fn, retries = 3, delayMs = 1000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      console.log(\`Retry \${i + 1}/\${retries}...\`);
+      await new Promise(r => setTimeout(r, delayMs));
+    }
+  }
+}
+// ========================================
+// wrap - Wrap function with before/after logic
+// ========================================
+function wrap(fn, wrapper) {
+  return function(...args) {
+    return wrapper.call(this, fn, ...args);
+  };
+}
+const greet = name => console.log('Hello, ' + name);
+const loggedGreet = wrap(greet, function(original, name) {
+  console.log('Before:', name);
+  original(name);
+  console.log('After:', name);
+});
+loggedGreet('John');
+// "Before: John"
+// "Hello, John"
+// "After: John"
+\`\`\`
+---
+## FUNCTION COMPOSITION
+Function composition combines simple functions to build more complex ones. It's a fundamental concept in functional programming.
+\`\`\`js
+// Simple functions to compose
 const add10 = x => x + 10;
 const multiply2 = x => x * 2;
 const subtract5 = x => x - 5;
-
-// Manual composition
-const result = subtract5(multiply2(add10(5))); // ((5+10)*2)-5 = 25
-
-// Compose function (right to left)
+const square = x => x * x;
+// ========================================
+// MANUAL COMPOSITION (Nested calls)
+// ========================================
+const result = subtract5(multiply2(add10(5)));
+// Step by step: add10(5)=15, multiply2(15)=30, subtract5(30)=25
+console.log(result); // 25
+// Hard to read when deeply nested!
+// ========================================
+// COMPOSE FUNCTION (Right to Left)
+// ========================================
+// compose(f, g, h)(x) = f(g(h(x)))
+// Last function is called first
 const compose = (...fns) => (x) => 
   fns.reduceRight((acc, fn) => fn(acc), x);
-
-const combined = compose(subtract5, multiply2, add10);
-console.log(combined(5)); // 25
-
-// Pipe function (left to right)
+const composed = compose(subtract5, multiply2, add10);
+console.log(composed(5)); // 25: 5 → 15 → 30 → 25
+// With more functions
+const complex = compose(subtract5, square, multiply2, add10);
+console.log(complex(5)); // 895: 5 → 15 → 30 → 900 → 895
+// ========================================
+// PIPE FUNCTION (Left to Right)
+// ========================================
+// pipe(f, g, h)(x) = h(g(f(x)))
+// First function is called first (more intuitive)
 const pipe = (...fns) => (x) => 
   fns.reduce((acc, fn) => fn(acc), x);
-
 const piped = pipe(add10, multiply2, subtract5);
-console.log(piped(5)); // 25
-
-// ===== PURE FUNCTIONS =====
-// Same input = same output, no side effects
-
-// Pure
+console.log(piped(5)); // 25: 5 → 15 → 30 → 25
+// Reading left to right matches the data flow
+const transform = pipe(
+  x => x + 10,    // First: add 10
+  x => x * 2,     // Then: multiply by 2
+  x => x - 5      // Finally: subtract 5
+);
+// ========================================
+// ASYNC COMPOSITION
+// ========================================
+const pipeAsync = (...fns) => (x) =>
+  fns.reduce(
+    (promise, fn) => promise.then(fn),
+    Promise.resolve(x)
+  );
+const fetchAndProcess = pipeAsync(
+  userId => fetch(\`/api/users/\${userId}\`),
+  response => response.json(),
+  user => user.name.toUpperCase(),
+  name => \`Hello, \${name}!\`
+);
+const greeting = await fetchAndProcess(1);
+console.log(greeting); // "Hello, JOHN!"
+\`\`\`
+### Practical Composition Examples
+\`\`\`js
+// ========================================
+// Data transformation pipeline
+// ========================================
+const users = [
+  { name: 'John', age: 25, active: true },
+  { name: 'Jane', age: 30, active: false },
+  { name: 'Bob', age: 35, active: true },
+  { name: 'Alice', age: 28, active: true }
+];
+// Composable utility functions
+const filter = predicate => array => array.filter(predicate);
+const map = fn => array => array.map(fn);
+const sort = compareFn => array => [...array].sort(compareFn);
+const take = n => array => array.slice(0, n);
+const prop = key => obj => obj[key];
+// Build transformation pipeline
+const getActiveUserNames = pipe(
+  filter(user => user.active),
+  map(prop('name')),
+  sort((a, b) => a.localeCompare(b))
+);
+console.log(getActiveUserNames(users)); // ['Alice', 'Bob', 'John']
+// Another pipeline
+const getTop2ActiveByAge = pipe(
+  filter(user => user.active),
+  sort((a, b) => b.age - a.age),
+  take(2),
+  map(user => \`\${user.name} (\${user.age})\`)
+);
+console.log(getTop2ActiveByAge(users)); // ['Bob (35)', 'Alice (28)']
+// ========================================
+// String transformation
+// ========================================
+const trim = str => str.trim();
+const toLowerCase = str => str.toLowerCase();
+const split = separator => str => str.split(separator);
+const join = separator => arr => arr.join(separator);
+const replace = (pattern, replacement) => str => str.replace(pattern, replacement);
+const slugify = pipe(
+  trim,
+  toLowerCase,
+  replace(/[^\w\s-]/g, ''),
+  replace(/\s+/g, '-'),
+  replace(/-+/g, '-')
+);
+console.log(slugify('  Hello World! This is a Test  ')); // 'hello-world-this-is-a-test'
+// ========================================
+// Validation pipeline
+// ========================================
+const validate = (...validators) => (value) => {
+  for (const validator of validators) {
+    const result = validator(value);
+    if (result !== true) return result;
+  }
+  return true;
+};
+const required = value => 
+  value !== '' || 'Field is required';
+const minLength = min => value => 
+  value.length >= min || \`Minimum length is \${min}\`;
+const maxLength = max => value => 
+  value.length <= max || \`Maximum length is \${max}\`;
+const pattern = (regex, message) => value => 
+  regex.test(value) || message;
+const validatePassword = validate(
+  required,
+  minLength(8),
+  maxLength(20),
+  pattern(/[A-Z]/, 'Must contain uppercase'),
+  pattern(/[a-z]/, 'Must contain lowercase'),
+  pattern(/[0-9]/, 'Must contain number')
+);
+console.log(validatePassword('')); // 'Field is required'
+console.log(validatePassword('short')); // 'Minimum length is 8'
+console.log(validatePassword('ValidPass123')); // true
+\`\`\`
+---
+## PURE FUNCTIONS
+A pure function always produces the same output for the same input and has no side effects. Understanding pure functions is essential for functional programming and predictable code.
+\`\`\`js
+// ========================================
+// PURE FUNCTIONS
+// ========================================
+// Same input → Same output, no side effects
+// ✅ PURE: Only depends on inputs
 function add(a, b) {
   return a + b;
 }
-
-// Impure - depends on external state
-let multiplier2 = 2;
-function impureMultiply(x) {
-  return x * multiplier2;
+console.log(add(2, 3)); // Always 5
+// ✅ PURE: Creates new array, doesn't mutate
+function appendPure(arr, item) {
+  return [...arr, item];
 }
-
-// Impure - has side effect
-function impureAdd(arr, item) {
-  arr.push(item); // Mutates input
+const original = [1, 2, 3];
+const newArr = appendPure(original, 4);
+console.log(original); // [1, 2, 3] (unchanged)
+console.log(newArr);   // [1, 2, 3, 4]
+// ✅ PURE: Object transformation
+function updateAge(person, newAge) {
+  return { ...person, age: newAge };
+}
+// ========================================
+// IMPURE FUNCTIONS
+// ========================================
+// ❌ IMPURE: Depends on external state
+let multiplier = 2;
+function impureMultiply(x) {
+  return x * multiplier; // Different if multiplier changes
+}
+console.log(impureMultiply(5)); // 10
+multiplier = 3;
+console.log(impureMultiply(5)); // 15 (different result!)
+// ❌ IMPURE: Modifies input (side effect)
+function impureAppend(arr, item) {
+  arr.push(item); // Mutates the original array!
   return arr;
 }
-
-// Pure alternative
-function pureAdd(arr, item) {
-  return [...arr, item]; // Returns new array
+const myArr = [1, 2, 3];
+impureAppend(myArr, 4);
+console.log(myArr); // [1, 2, 3, 4] (mutated!)
+// ❌ IMPURE: Has side effects
+let total = 0;
+function impureAdd(x) {
+  total += x; // Modifies external state
+  return total;
 }
-
-// ===== DEFAULT PARAMETERS =====
-function greetUser(name = 'Guest', greeting = 'Hello') {
+// ❌ IMPURE: Depends on random/time
+function impureRandom(max) {
+  return Math.floor(Math.random() * max);
+}
+function impureTimestamp() {
+  return Date.now();
+}
+// ❌ IMPURE: Console output is a side effect
+function impureLog(message) {
+  console.log(message); // Side effect
+  return message;
+}
+\`\`\`
+### Benefits of Pure Functions
+\`\`\`js
+// ========================================
+// 1. TESTABILITY
+// ========================================
+// Pure functions are easy to test - predictable!
+function calculateTax(amount, rate) {
+  return amount * rate;
+}
+// Easy to test
+console.assert(calculateTax(100, 0.1) === 10);
+console.assert(calculateTax(200, 0.2) === 40);
+// ========================================
+// 2. MEMOIZATION
+// ========================================
+// Since same input = same output, we can cache results
+function memoize(fn) {
+  const cache = new Map();
+  return function(...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      console.log('Cache hit!');
+      return cache.get(key);
+    }
+    const result = fn.apply(this, args);
+    cache.set(key, result);
+    return result;
+  };
+}
+// Expensive pure function
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+const memoizedFib = memoize(fibonacci);
+console.log(memoizedFib(10)); // Calculates
+console.log(memoizedFib(10)); // "Cache hit!" - returns cached
+// ========================================
+// 3. REFERENTIAL TRANSPARENCY
+// ========================================
+// Can replace function call with its result
+const double = x => x * 2;
+const add = (a, b) => a + b;
+// These are equivalent:
+const result1 = add(double(5), double(10));
+const result2 = add(10, 20);
+const result3 = 30;
+console.log(result1 === result2 && result2 === result3); // true
+// ========================================
+// 4. PARALLELIZATION
+// ========================================
+// Pure functions can run in parallel safely
+const numbers = [1, 2, 3, 4, 5];
+// These could run in parallel (conceptually)
+const squared = numbers.map(n => n * n);
+// No shared state to worry about!
+// ========================================
+// 5. DEBUGGING
+// ========================================
+// No hidden state means easier debugging
+function processData(data) {
+  const step1 = normalize(data);
+  const step2 = validate(step1);
+  const step3 = transform(step2);
+  return step3;
+}
+// You can inspect each step independently
+// Each function's output only depends on its input
+\`\`\`
+### Converting Impure to Pure
+\`\`\`js
+// ========================================
+// IMPURE TO PURE PATTERNS
+// ========================================
+// ❌ IMPURE: Mutates input
+function impureSort(arr) {
+  return arr.sort((a, b) => a - b); // Mutates original!
+}
+// ✅ PURE: Returns new sorted array
+function pureSort(arr) {
+  return [...arr].sort((a, b) => a - b);
+}
+// ❌ IMPURE: Depends on Date.now()
+function impureCreateUser(name) {
+  return {
+    name,
+    createdAt: Date.now() // Different each time
+  };
+}
+// ✅ PURE: Accept time as parameter
+function pureCreateUser(name, timestamp) {
+  return {
+    name,
+    createdAt: timestamp
+  };
+}
+// ❌ IMPURE: Makes HTTP request
+async function impureFetchUser(id) {
+  const response = await fetch(\`/api/users/\${id}\`);
+  return response.json();
+}
+// ✅ PURE: Accept fetch function as dependency (DI)
+async function pureFetchUser(id, fetchFn) {
+  const response = await fetchFn(\`/api/users/\${id}\`);
+  return response.json();
+}
+// ❌ IMPURE: Writes to database
+async function impureSaveUser(user) {
+  await db.users.insert(user);
+}
+// ✅ Separate pure logic from side effects
+function prepareUserForSave(user) {
+  return {
+    ...user,
+    updatedAt: user.timestamp,
+    normalized: user.name.toLowerCase()
+  };
+}
+// Side effects at the edges of your application
+async function saveUser(user, timestamp, db) {
+  const prepared = prepareUserForSave({ ...user, timestamp });
+  await db.users.insert(prepared);
+}
+\`\`\`
+---
+## DEFAULT PARAMETERS
+Default parameters allow you to set default values for function parameters.
+\`\`\`js
+// ========================================
+// BASIC DEFAULT PARAMETERS
+// ========================================
+function greet(name = 'Guest', greeting = 'Hello') {
   return \`\${greeting}, \${name}!\`;
 }
-
-console.log(greetUser());           // "Hello, Guest!"
-console.log(greetUser('John'));     // "Hello, John!"
-console.log(greetUser('John', 'Hi')); // "Hi, John!"
-
-// Default with expressions
-function getDefault() {
-  return 'default';
+console.log(greet());                 // "Hello, Guest!"
+console.log(greet('John'));           // "Hello, John!"
+console.log(greet('John', 'Hi'));     // "Hi, John!"
+console.log(greet(undefined, 'Hey')); // "Hey, Guest!" (undefined triggers default)
+console.log(greet(null, 'Hey'));      // "Hey, null!" (null doesn't trigger default)
+// ========================================
+// DEFAULT WITH EXPRESSIONS
+// ========================================
+function getDefaultName() {
+  console.log('Getting default name...');
+  return 'Default User';
 }
-
-function test(value = getDefault()) {
-  return value;
+function greetLazy(name = getDefaultName()) {
+  return 'Hello, ' + name;
 }
-
-// ===== REST PARAMETERS =====
+console.log(greetLazy('John')); // "Hello, John" (getDefaultName not called)
+console.log(greetLazy());       // "Getting default name..." "Hello, Default User"
+// ========================================
+// DEFAULTS CAN REFERENCE EARLIER PARAMETERS
+// ========================================
+function createUser(name, role = 'user', id = \`\${role}_\${Date.now()}\`) {
+  return { name, role, id };
+}
+console.log(createUser('John'));
+// { name: 'John', role: 'user', id: 'user_1234567890' }
+console.log(createUser('Admin', 'admin'));
+// { name: 'Admin', role: 'admin', id: 'admin_1234567890' }
+// ========================================
+// DESTRUCTURING WITH DEFAULTS
+// ========================================
+function setupOptions({ 
+  host = 'localhost', 
+  port = 3000, 
+  debug = false 
+} = {}) {
+  return { host, port, debug };
+}
+console.log(setupOptions());                    // { host: 'localhost', port: 3000, debug: false }
+console.log(setupOptions({}));                  // { host: 'localhost', port: 3000, debug: false }
+console.log(setupOptions({ port: 8080 }));      // { host: 'localhost', port: 8080, debug: false }
+console.log(setupOptions({ host: 'example.com', debug: true })); 
+// { host: 'example.com', port: 3000, debug: true }
+// Note the = {} at the end - this allows calling with no argument
+// Without it: setupOptions() would throw an error
+// ========================================
+// ARRAY DESTRUCTURING WITH DEFAULTS
+// ========================================
+function parseCoordinates([x = 0, y = 0, z = 0] = []) {
+  return { x, y, z };
+}
+console.log(parseCoordinates());          // { x: 0, y: 0, z: 0 }
+console.log(parseCoordinates([10]));      // { x: 10, y: 0, z: 0 }
+console.log(parseCoordinates([10, 20]));  // { x: 10, y: 20, z: 0 }
+console.log(parseCoordinates([10, 20, 30])); // { x: 10, y: 20, z: 30 }
+\`\`\`
+---
+## REST PARAMETERS
+Rest parameters allow you to represent an indefinite number of arguments as an array.
+\`\`\`js
+// ========================================
+// BASIC REST PARAMETERS
+// ========================================
 function sum(...numbers) {
-  return numbers.reduce((a, b) => a + b, 0);
+  return numbers.reduce((total, n) => total + n, 0);
 }
-
+console.log(sum(1, 2, 3));       // 6
 console.log(sum(1, 2, 3, 4, 5)); // 15
-
-// Must be last parameter
-function formatName(title, ...names) {
-  return title + ' ' + names.join(' ');
+console.log(sum());              // 0
+// Rest parameter is a real array (unlike 'arguments')
+function showType(...args) {
+  console.log(Array.isArray(args)); // true
+  console.log(args.length);
 }
-
-console.log(formatName('Mr.', 'John', 'Doe')); // "Mr. John Doe"`,
-      language: 'javascript'
-    },
+// ========================================
+// REST MUST BE LAST PARAMETER
+// ========================================
+function formatMessage(template, ...values) {
+  return values.reduce((msg, val, i) => 
+    msg.replace(\`{\${i}}\`, val), template);
+}
+console.log(formatMessage('Hello {0}, you have {1} messages', 'John', 5));
+// "Hello John, you have 5 messages"
+function createTeam(leader, ...members) {
+  return {
+    leader,
+    members,
+    size: members.length + 1
+  };
+}
+console.log(createTeam('John', 'Jane', 'Bob', 'Alice'));
+// { leader: 'John', members: ['Jane', 'Bob', 'Alice'], size: 4 }
+// ========================================
+// REST VS ARGUMENTS
+// ========================================
+function oldWay() {
+  // 'arguments' is array-like but not a real array
+  console.log(arguments);             // { '0': 1, '1': 2, '2': 3 }
+  console.log(Array.isArray(arguments)); // false
+  // To use array methods, must convert
+  const args = Array.from(arguments);
+  // Or: const args = [...arguments];
+  return args.reduce((a, b) => a + b, 0);
+}
+function newWay(...args) {
+  // Rest params give you a real array
+  console.log(args);                  // [1, 2, 3]
+  console.log(Array.isArray(args));   // true
+  return args.reduce((a, b) => a + b, 0);
+}
+// 'arguments' not available in arrow functions
+const arrowFunc = () => {
+  // console.log(arguments); // ReferenceError
+};
+// Rest parameters work in arrow functions
+const arrowWithRest = (...args) => {
+  console.log(args); // Works!
+};
+// ========================================
+// DESTRUCTURING WITH REST
+// ========================================
+function processFirst(first, ...rest) {
+  console.log('First:', first);
+  console.log('Rest:', rest);
+}
+processFirst(1, 2, 3, 4, 5);
+// First: 1
+// Rest: [2, 3, 4, 5]
+// In destructuring assignment
+const [head, ...tail] = [1, 2, 3, 4, 5];
+console.log(head); // 1
+console.log(tail); // [2, 3, 4, 5]
+const { name, ...otherProps } = { name: 'John', age: 30, city: 'NYC' };
+console.log(name);       // 'John'
+console.log(otherProps); // { age: 30, city: 'NYC' }
+\`\`\`
+---
+## CURRYING
+Currying transforms a function with multiple arguments into a sequence of functions each taking a single argument.
+\`\`\`js
+// ========================================
+// BASIC CURRYING
+// ========================================
+// Non-curried function
+function add(a, b, c) {
+  return a + b + c;
+}
+console.log(add(1, 2, 3)); // 6
+// Curried version - manually
+function curriedAdd(a) {
+  return function(b) {
+    return function(c) {
+      return a + b + c;
+    };
+  };
+}
+console.log(curriedAdd(1)(2)(3)); // 6
+// Arrow function version (more concise)
+const curriedAddArrow = a => b => c => a + b + c;
+console.log(curriedAddArrow(1)(2)(3)); // 6
+// ========================================
+// PARTIAL APPLICATION WITH CURRYING
+// ========================================
+const addOne = curriedAdd(1);
+const addOneAndTwo = addOne(2);
+console.log(addOneAndTwo(3)); // 6
+console.log(addOneAndTwo(10)); // 13
+// Practical example: logging
+const log = level => timestamp => message => 
+  console.log(\`[\${level}] [\${timestamp}] \${message}\`);
+const errorLog = log('ERROR');
+const errorLogNow = errorLog(new Date().toISOString());
+errorLogNow('Something went wrong');
+// [ERROR] [2024-01-01T12:00:00.000Z] Something went wrong
+// ========================================
+// GENERIC CURRY FUNCTION
+// ========================================
+function curry(fn) {
+  return function curried(...args) {
+    if (args.length >= fn.length) {
+      // All arguments received, call original function
+      return fn.apply(this, args);
+    } else {
+      // Not enough arguments, return function that collects more
+      return function(...moreArgs) {
+        return curried.apply(this, args.concat(moreArgs));
+      };
+    }
+  };
+}
+// Usage
+function multiply(a, b, c) {
+  return a * b * c;
+}
+const curriedMultiply = curry(multiply);
+console.log(curriedMultiply(2)(3)(4));     // 24
+console.log(curriedMultiply(2, 3)(4));     // 24
+console.log(curriedMultiply(2)(3, 4));     // 24
+console.log(curriedMultiply(2, 3, 4));     // 24
+// ========================================
+// PRACTICAL CURRYING EXAMPLES
+// ========================================
+// Filtering
+const filter = predicate => array => array.filter(predicate);
+const isGreaterThan = min => value => value > min;
+const isGreaterThan10 = isGreaterThan(10);
+const filterGreaterThan10 = filter(isGreaterThan10);
+console.log(filterGreaterThan10([5, 10, 15, 20])); // [15, 20]
+// Mapping
+const map = fn => array => array.map(fn);
+const multiply = factor => value => value * factor;
+const double = multiply(2);
+const doubleAll = map(double);
+console.log(doubleAll([1, 2, 3])); // [2, 4, 6]
+// String manipulation
+const replace = pattern => replacement => str => str.replace(pattern, replacement);
+const sanitize = replace(/[<>]/g)('');
+console.log(sanitize('<script>alert("xss")</script>')); 
+// 'scriptalert("xss")/script'
+// API calls
+const request = method => url => data => 
+  fetch(url, { method, body: JSON.stringify(data) });
+const post = request('POST');
+const postToUsers = post('/api/users');
+await postToUsers({ name: 'John' });
+\`\`\`
+---
+## PARTIAL APPLICATION
+Partial application creates a new function by pre-filling some arguments of an existing function.
+\`\`\`js
+// ========================================
+// PARTIAL APPLICATION WITH bind()
+// ========================================
+function greet(greeting, punctuation, name) {
+  return \`\${greeting}, \${name}\${punctuation}\`;
+}
+// Partially apply with bind
+const sayHello = greet.bind(null, 'Hello', '!');
+console.log(sayHello('John')); // "Hello, John!"
+console.log(sayHello('Jane')); // "Hello, Jane!"
+const askQuestion = greet.bind(null, 'How are you', '?');
+console.log(askQuestion('John')); // "How are you, John?"
+// ========================================
+// CUSTOM PARTIAL FUNCTION
+// ========================================
+function partial(fn, ...presetArgs) {
+  return function(...laterArgs) {
+    return fn(...presetArgs, ...laterArgs);
+  };
+}
+const add = (a, b, c) => a + b + c;
+const add5 = partial(add, 5);
+const add5And10 = partial(add, 5, 10);
+console.log(add5(10, 15));    // 30 (5 + 10 + 15)
+console.log(add5And10(15));   // 30 (5 + 10 + 15)
+// ========================================
+// PARTIAL WITH PLACEHOLDERS
+// ========================================
+const _ = Symbol('placeholder');
+function partialWithPlaceholders(fn, ...args) {
+  return function(...laterArgs) {
+    let laterIndex = 0;
+    const finalArgs = args.map(arg => 
+      arg === _ ? laterArgs[laterIndex++] : arg
+    );
+    return fn(...finalArgs, ...laterArgs.slice(laterIndex));
+  };
+}
+const divide = (a, b) => a / b;
+// Normal partial: always divides by 2
+const divideBy2 = partial(divide, _, 2);
+// Wait, that doesn't work with normal partial!
+// With placeholders: divide something by 2
+const divideByTwo = partialWithPlaceholders(divide, _, 2);
+console.log(divideByTwo(10)); // 5 (10 / 2)
+// Divide 100 by something
+const divide100By = partialWithPlaceholders(divide, 100, _);
+console.log(divide100By(5)); // 20 (100 / 5)
+// ========================================
+// CURRYING VS PARTIAL APPLICATION
+// ========================================
+// Currying: Transforms f(a, b, c) into f(a)(b)(c)
+// Always produces unary functions
+// Partial: Pre-fills some arguments
+// Can pre-fill any number at once
+function original(a, b, c, d) {
+  return a + b + c + d;
+}
+// Curried: must call one arg at a time
+const curried = curry(original);
+curried(1)(2)(3)(4); // Works
+// curried(1, 2)(3, 4); // Also works with our curry implementation
+// Partial: pre-fill whatever you want
+const partial1 = partial(original, 1, 2);
+partial1(3, 4); // 10
+// ========================================
+// PRACTICAL EXAMPLES
+// ========================================
+// Event handling
+function handleEvent(eventType, handler, element) {
+  element.addEventListener(eventType, handler);
+}
+const onClick = partial(handleEvent, 'click');
+const onClickLog = partial(onClick, (e) => console.log('Clicked:', e.target));
+// onClickLog(someButton); // Attaches click handler
+// API configuration
+function fetchWithConfig(baseUrl, headers, endpoint) {
+  return fetch(baseUrl + endpoint, { headers });
+}
+const apiClient = partial(fetchWithConfig, 
+  'https://api.example.com',
+  { 'Authorization': 'Bearer token123' }
+);
+await apiClient('/users');
+await apiClient('/posts');
+\`\`\`
+---
+## MEMOIZATION
+Memoization caches the results of expensive function calls and returns the cached result when the same inputs occur again.
+\`\`\`js
+// ========================================
+// BASIC MEMOIZATION
+// ========================================
+function memoize(fn) {
+  const cache = new Map();
+  return function(...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      console.log('Cache hit for:', key);
+      return cache.get(key);
+    }
+    console.log('Computing for:', key);
+    const result = fn.apply(this, args);
+    cache.set(key, result);
+    return result;
+  };
+}
+// Expensive function
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+// Without memoization: fibonacci(40) takes seconds
+// With memoization: instant after first call
+const memoizedFib = memoize(function fib(n) {
+  if (n <= 1) return n;
+  return memoizedFib(n - 1) + memoizedFib(n - 2);
+});
+console.log(memoizedFib(40)); // Computes once
+console.log(memoizedFib(40)); // Cache hit!
+// ========================================
+// MEMOIZATION WITH CUSTOM KEY FUNCTION
+// ========================================
+function memoizeWithKeyFn(fn, keyFn) {
+  const cache = new Map();
+  return function(...args) {
+    const key = keyFn ? keyFn(...args) : JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    const result = fn.apply(this, args);
+    cache.set(key, result);
+    return result;
+  };
+}
+// For objects, we might want a custom key
+const getUser = memoizeWithKeyFn(
+  async function(query) {
+    const response = await fetch(\`/api/users?\${new URLSearchParams(query)}\`);
+    return response.json();
+  },
+  (query) => query.id // Use only id for cache key
+);
+// ========================================
+// MEMOIZATION WITH TTL (Time To Live)
+// ========================================
+function memoizeWithTTL(fn, ttlMs) {
+  const cache = new Map();
+  return function(...args) {
+    const key = JSON.stringify(args);
+    const cached = cache.get(key);
+    if (cached && Date.now() - cached.timestamp < ttlMs) {
+      console.log('Cache hit (not expired)');
+      return cached.value;
+    }
+    console.log('Computing (cache miss or expired)');
+    const result = fn.apply(this, args);
+    cache.set(key, { value: result, timestamp: Date.now() });
+    return result;
+  };
+}
+const getPrice = memoizeWithTTL(
+  function(productId) {
+    // Expensive API call
+    return fetchProductPrice(productId);
+  },
+  60000 // Cache for 1 minute
+);
+// ========================================
+// MEMOIZATION WITH MAX SIZE (LRU-like)
+// ========================================
+function memoizeWithMaxSize(fn, maxSize = 100) {
+  const cache = new Map();
+  return function(...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      // Move to end (most recently used)
+      const value = cache.get(key);
+      cache.delete(key);
+      cache.set(key, value);
+      return value;
+    }
+    const result = fn.apply(this, args);
+    if (cache.size >= maxSize) {
+      // Delete oldest (first item)
+      const firstKey = cache.keys().next().value;
+      cache.delete(firstKey);
+    }
+    cache.set(key, result);
+    return result;
+  };
+}
+// ========================================
+// WHEN TO USE MEMOIZATION
+// ========================================
+// ✅ GOOD USE CASES:
+// 1. Pure functions (same input = same output)
+// 2. Expensive computations
+// 3. Functions called frequently with same args
+// 4. Recursive functions (like fibonacci)
+// ❌ BAD USE CASES:
+// 1. Functions with side effects
+// 2. Functions that return different values for same input (Date.now())
+// 3. Functions with object/array args that change (use custom key fn)
+// 4. When memory is limited
+\`\`\`
+---
+## RECURSION
+Recursion is when a function calls itself. It's essential for tree traversal, divide-and-conquer algorithms, and many other patterns.
+\`\`\`js
+// ========================================
+// BASIC RECURSION
+// ========================================
+function factorial(n) {
+  // Base case: stop recursion
+  if (n <= 1) return 1;
+  // Recursive case: call itself
+  return n * factorial(n - 1);
+}
+console.log(factorial(5)); // 120 (5 * 4 * 3 * 2 * 1)
+// How it works:
+// factorial(5)
+// 5 * factorial(4)
+// 5 * 4 * factorial(3)
+// 5 * 4 * 3 * factorial(2)
+// 5 * 4 * 3 * 2 * factorial(1)
+// 5 * 4 * 3 * 2 * 1
+// 120
+// ========================================
+// TAIL RECURSION
+// ========================================
+// The recursive call is the LAST operation
+// Some engines optimize this (Tail Call Optimization)
+function factorialTail(n, accumulator = 1) {
+  if (n <= 1) return accumulator;
+  return factorialTail(n - 1, n * accumulator);
+}
+console.log(factorialTail(5)); // 120
+// ========================================
+// COMMON RECURSIVE PATTERNS
+// ========================================
+// 1. Sum array
+function sumArray(arr, index = 0) {
+  if (index >= arr.length) return 0;
+  return arr[index] + sumArray(arr, index + 1);
+}
+console.log(sumArray([1, 2, 3, 4, 5])); // 15
+// 2. Flatten nested arrays
+function flatten(arr) {
+  let result = [];
+  for (const item of arr) {
+    if (Array.isArray(item)) {
+      result = result.concat(flatten(item));
+    } else {
+      result.push(item);
+    }
+  }
+  return result;
+}
+console.log(flatten([1, [2, [3, [4]], 5]])); // [1, 2, 3, 4, 5]
+// 3. Deep clone
+function deepClone(obj) {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(item => deepClone(item));
+  }
+  const cloned = {};
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      cloned[key] = deepClone(obj[key]);
+    }
+  }
+  return cloned;
+}
+// 4. Tree traversal
+function traverseTree(node, callback) {
+  if (!node) return;
+  callback(node.value);
+  traverseTree(node.left, callback);
+  traverseTree(node.right, callback);
+}
+const tree = {
+  value: 1,
+  left: { value: 2, left: { value: 4 }, right: { value: 5 } },
+  right: { value: 3, right: { value: 6 } }
+};
+const values = [];
+traverseTree(tree, v => values.push(v));
+console.log(values); // [1, 2, 4, 5, 3, 6]
+// 5. Find in nested object
+function findKey(obj, targetKey) {
+  for (const key in obj) {
+    if (key === targetKey) {
+      return obj[key];
+    }
+    if (typeof obj[key] === 'object' && obj[key] !== null) {
+      const result = findKey(obj[key], targetKey);
+      if (result !== undefined) return result;
+    }
+  }
+  return undefined;
+}
+const nested = { a: { b: { c: { target: 'found!' } } } };
+console.log(findKey(nested, 'target')); // 'found!'
+\`\`\`
+### Avoiding Stack Overflow
+\`\`\`js
+// ========================================
+// PROBLEM: Stack Overflow
+// ========================================
+function countDown(n) {
+  if (n <= 0) return;
+  console.log(n);
+  countDown(n - 1);
+}
+// countDown(100000); // RangeError: Maximum call stack size exceeded
+// ========================================
+// SOLUTION 1: Convert to Iteration
+// ========================================
+function countDownIterative(n) {
+  while (n > 0) {
+    console.log(n);
+    n--;
+  }
+}
+countDownIterative(100000); // Works fine
+// ========================================
+// SOLUTION 2: Trampoline
+// ========================================
+function trampoline(fn) {
+  return function trampolined(...args) {
+    let result = fn.apply(this, args);
+    while (typeof result === 'function') {
+      result = result();
+    }
+    return result;
+  };
+}
+// Wrap recursive function
+function countDownTrampoline(n) {
+  if (n <= 0) return 'done';
+  console.log(n);
+  // Return a function instead of calling recursively
+  return () => countDownTrampoline(n - 1);
+}
+const safeCountDown = trampoline(countDownTrampoline);
+safeCountDown(100000); // Works!
+// ========================================
+// SOLUTION 3: Continuation Passing Style (CPS)
+// ========================================
+function factorialCPS(n, continuation = (x) => x) {
+  if (n <= 1) return continuation(1);
+  return factorialCPS(n - 1, (result) => continuation(n * result));
+}
+// Still can overflow, but can be combined with trampoline
+\`\`\`
+---
+## COMMON INTERVIEW QUESTIONS
+### Q1: What's the difference between function declaration and expression?
+\`\`\`js
+// Declaration - Hoisted, can call before definition
+sayHello(); // Works!
+function sayHello() {
+  console.log('Hello');
+}
+// Expression - NOT hoisted
+// greet(); // TypeError: greet is not a function
+const greet = function() {
+  console.log('Greet');
+};
+greet(); // Works here
+// Key differences:
+// 1. Hoisting behavior
+// 2. Named expressions have name only inside function
+// 3. Declarations must have names
+\`\`\`
+### Q2: Explain 'this' in arrow functions
+\`\`\`js
+const obj = {
+  name: 'Object',
+  regular() {
+    console.log(this.name); // 'Object'
+  },
+  arrow: () => {
+    console.log(this.name); // undefined (from enclosing scope)
+  },
+  nested() {
+    setTimeout(function() {
+      console.log(this.name); // undefined
+    }, 100);
+    setTimeout(() => {
+      console.log(this.name); // 'Object' (inherited from nested)
+    }, 100);
+  }
+};
+// Arrow functions don't have their own 'this'
+// They inherit from enclosing lexical scope
+\`\`\`
+### Q3: Implement curry function
+\`\`\`js
+function curry(fn) {
+  return function curried(...args) {
+    if (args.length >= fn.length) {
+      return fn.apply(this, args);
+    }
+    return function(...moreArgs) {
+      return curried.apply(this, args.concat(moreArgs));
+    };
+  };
+}
+const add = (a, b, c) => a + b + c;
+const curriedAdd = curry(add);
+console.log(curriedAdd(1)(2)(3)); // 6
+console.log(curriedAdd(1, 2)(3)); // 6
+console.log(curriedAdd(1)(2, 3)); // 6
+\`\`\`
+### Q4: Implement compose and pipe
+\`\`\`js
+// compose: right to left
+const compose = (...fns) => x => 
+  fns.reduceRight((acc, fn) => fn(acc), x);
+// pipe: left to right
+const pipe = (...fns) => x => 
+  fns.reduce((acc, fn) => fn(acc), x);
+const add1 = x => x + 1;
+const mult2 = x => x * 2;
+console.log(compose(mult2, add1)(5)); // 12: (5+1)*2
+console.log(pipe(add1, mult2)(5));    // 12: (5+1)*2
+\`\`\`
+### Q5: Implement memoize
+\`\`\`js
+function memoize(fn) {
+  const cache = new Map();
+  return function(...args) {
+    const key = JSON.stringify(args);
+    if (!cache.has(key)) {
+      cache.set(key, fn.apply(this, args));
+    }
+    return cache.get(key);
+  };
+}
+const expensiveOp = memoize((n) => {
+  console.log('Computing...');
+  return n * n;
+});
+console.log(expensiveOp(5)); // "Computing..." 25
+console.log(expensiveOp(5)); // 25 (cached)
+\`\`\`
+### Q6: What's the output?
+\`\`\`js
+var a = 1;
+function outer() {
+  var a = 2;
+  function inner() {
+    console.log(a);
+    var a = 3;
+  }
+  inner();
+}
+outer();
+// Output: undefined
+// Because 'var a = 3' is hoisted inside inner()
+// So 'a' exists but is undefined when logged
+\`\`\`
+### Q7: Implement once function
+\`\`\`js
+function once(fn) {
+  let called = false;
+  let result;
+  return function(...args) {
+    if (!called) {
+      called = true;
+      result = fn.apply(this, args);
+    }
+    return result;
+  };
+}
+const init = once(() => {
+  console.log('Initializing...');
+  return 'done';
+});
+console.log(init()); // "Initializing..." "done"
+console.log(init()); // "done" (no log)
+console.log(init()); // "done" (no log)
+\`\`\`
+### Q8: Explain IIFE and its use cases
+\`\`\`js
+// IIFE = Immediately Invoked Function Expression
+(function() {
+  // Private scope
+  var secret = 'hidden';
+})();
+// Use cases:
+// 1. Avoid global pollution
+// 2. Module pattern
+// 3. Initialization code
+// 4. Creating closures in loops
+const counter = (function() {
+  let count = 0;
+  return {
+    increment: () => ++count,
+    getCount: () => count
+  };
+})();
+counter.increment();
+console.log(counter.getCount()); // 1
+\`\`\`
+---
+## QUICK REFERENCE CHEAT SHEET
+| Type | Syntax | Hoisted | Has 'this' | Has 'arguments' |
+|------|--------|---------|------------|-----------------|
+| Declaration | \`function name() {}\` | Yes | Yes | Yes |
+| Expression | \`const fn = function() {}\` | No | Yes | Yes |
+| Arrow | \`const fn = () => {}\` | No | No (lexical) | No |
+| Generator | \`function* gen() {}\` | Yes | Yes | Yes |
+| Async | \`async function fn() {}\` | Yes | Yes | Yes |
+---
+## KEY TAKEAWAYS FOR INTERVIEWS
+1. **Know all function types** - Declaration, expression, arrow, IIFE, generator, async
+2. **Understand hoisting** - Declarations are hoisted, expressions are not
+3. **Master arrow functions** - Lexical this, no arguments, can't be constructors
+4. **Know this binding** - Regular functions vs arrow functions
+5. **Understand closures** - Functions remember their lexical scope
+6. **Pure functions matter** - Same input = same output, no side effects
+7. **Higher-order functions** - Functions that take/return functions
+8. **Composition patterns** - compose, pipe, curry, partial application
+9. **Memoization** - Cache expensive computations
+10. **Recursion** - Base case + recursive case, watch for stack overflow`,
+  language: 'javascript'
+},
 
     {
   id: 'interview-currying',
