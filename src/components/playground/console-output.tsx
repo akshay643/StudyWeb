@@ -1,6 +1,6 @@
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
-import { AlertCircle, CheckCircle2, Info, AlertTriangle } from 'lucide-react'
+import { AlertCircle, Info, AlertTriangle } from 'lucide-react'
 
 export interface ConsoleLog {
   id: string

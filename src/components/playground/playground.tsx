@@ -11,14 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Play, RotateCcw, Copy, Check, Download, ChevronDown, GripVertical, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
-// Pyodide type declarations
-declare global {
-  interface Window {
-    loadPyodide: (config?: { indexURL?: string }) => Promise<any>
-    pyodide: any
-  }
-}
+import { usePyodide } from '@/hooks/use-pyodide'
 
 const defaultCodes: Record<Language, string> = {
   javascript: `// Welcome to StudyWeb Playground! 🚀
@@ -183,16 +176,15 @@ export function Playground({
   const [htmlPreview, setHtmlPreview] = useState<string>('')
   const [splitPosition, setSplitPosition] = useState(65)
   const [pyodideLoading, setPyodideLoading] = useState(false)
-  const [pyodideReady, setPyodideReady] = useState(false)
-  const [pyodideError, setPyodideError] = useState<string | null>(null)
-  
+  const { isReady: isPyodideReady } = usePyodide()
+
   const containerRef = useRef<HTMLDivElement>(null)
   const isDragging = useRef(false)
-  const pyodideRef = useRef<any>(null)
 
   // Load Pyodide script
   useEffect(() => {
-    if (typeof window !== 'undefined' && !window.loadPyodide) {
+    const win = window as unknown as { loadPyodide?: unknown }
+    if (typeof window !== 'undefined' && !win.loadPyodide) {
       const script = document.createElement('script')
       script.src = 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js'
       script.async = true
@@ -202,24 +194,20 @@ export function Playground({
 
   // Initialize Pyodide when Python is selected
   const initPyodide = async () => {
-    if (pyodideRef.current) return pyodideRef.current
+    const win = window as unknown as { loadPyodide?: (config?: { indexURL?: string }) => Promise<any> }
     
-    if (!window.loadPyodide) {
+    if (!win.loadPyodide) {
       throw new Error('Pyodide is still loading. Please wait a moment and try again.')
     }
 
     setPyodideLoading(true)
-    setPyodideError(null)
     
     try {
-      const pyodide = await window.loadPyodide({
+      const pyodide = await win.loadPyodide({
         indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/'
       })
-      pyodideRef.current = pyodide
-      setPyodideReady(true)
       return pyodide
-    } catch (error: any) {
-      setPyodideError(error.message)
+    } catch (error: unknown) {
       throw error
     } finally {
       setPyodideLoading(false)
@@ -300,7 +288,7 @@ export function Playground({
       // Python execution with Pyodide
       if (language === 'python') {
         try {
-          addLog('info', pyodideReady ? 'Running Python...' : 'Loading Python runtime (first run may take a few seconds)...')
+          addLog('info', isPyodideReady ? 'Running Python...' : 'Loading Python runtime (first run may take a few seconds)...')
           setLogs([...newLogs])
 
           const pyodide = await initPyodide()
@@ -431,7 +419,7 @@ sys.stderr = sys.__stderr__
 
     setLogs(newLogs)
     setIsRunning(false)
-  }, [code, language, pyodideReady])
+  }, [code, language, isPyodideReady])
 
   const clearConsole = () => {
     setLogs([])
@@ -488,7 +476,7 @@ sys.stderr = sys.__stderr__
                   className={cn(lang === language && "bg-accent")}
                 >
                   {languageLabels[lang]}
-                  {lang === 'python' && !pyodideReady && (
+                  {lang === 'python' && !isPyodideReady && (
                     <span className="ml-2 text-xs text-muted-foreground">(loads on first run)</span>
                   )}
                 </DropdownMenuItem>
